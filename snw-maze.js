@@ -69,8 +69,8 @@ function initMaze() {
   let b = SNW.maze.renderer.getRenderBuffer();
 
   //Copy maze data to render buffer
-  for(let y = 0; y < mazeRenderData.length; y++){
-    for(let x = 0; x < mazeRenderData[y].length; x++){
+  for (let y = 0; y < mazeRenderData.length; y++) {
+    for (let x = 0; x < mazeRenderData[y].length; x++) {
       b[y][x] = mazeRenderData[y][x];
     }
   }
@@ -120,7 +120,13 @@ class MazeNode {
         }
         break;
       } else if (y[i] == 1) {
+        if (i == y.length - 1) {
+          this.connections.down = _findNode(this.x, i);
+          break;
+        }
         lastWasPath = true;
+      }else{
+        break;
       }
     }
     lastWasPath = false;
@@ -135,6 +141,8 @@ class MazeNode {
           break;
         }
         lastWasPath = true;
+      }else{
+        break;
       }
     }
     lastWasPath = false;
@@ -147,6 +155,8 @@ class MazeNode {
         break;
       } else if (x[i] == 1) {
         lastWasPath = true;
+      }else{
+        break;
       }
     }
     lastWasPath = false;
@@ -161,6 +171,8 @@ class MazeNode {
           break;
         }
         lastWasPath = true;
+      }else{
+        break;
       }
     }
   }
@@ -227,6 +239,16 @@ function createNodes() {
       }
     }
   }
+}
+
+function solve() {
+  let methodEl = document.getElementById('method');
+  let method = methodEl[methodEl.selectedIndex].value;
+  let n = [];
+  for (let i = 0; i < nodes.length; i++) {
+    n.push(nodes[i]);
+  }
+  let path = SNW.maze.pathFinding[method].solve(n);
 }
 
 //Create and draw the maze

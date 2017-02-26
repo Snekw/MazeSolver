@@ -32,10 +32,17 @@
         <!--<button type="button" onclick="maze_solve()">Solve</button>-->
     <!--</div>-->
     <img id="img" src="mazes/maze-10x10.png">
+
+    <label for="method">Method</label>
+    <select id="method" title="Method">
+        <option value="flood">flood</option>
+    </select>
+    <button onclick="solve()">Solve</button>
     <!--<canvas id="maze"></canvas>-->
     <!--<script src="maze.js"></script>-->
     <canvas id="snw-maze-canvas"></canvas>
     <script src="snw-maze-renderer.js"></script>
+    <script src="snw-maze-flood.js"></script>
     <script src="snw-maze.js"></script>
 </body>
 </html>
