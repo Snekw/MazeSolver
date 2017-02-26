@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!--
+/**
+ * Copyright (c) 2017 Ilkka Kuosmanen
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and 
+ * associated documentation files (the "Software"), to deal in the Software without restriction, 
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of 
+ * the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+-->
+<html lang="en-US">
+<head>
+    <title>Maze solver</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="maze.css">
+</head>
+<body>
+    <noscript>JS is required! Please enable JavaScript!</noscript>
+    <!--<div id="inputs" class="inputs">-->
+        <!--<label for="file">File:</label>-->
+        <!--<input id="file" type="file" accept="image/png"/>-->
+        <!--<label for="scale">Scale:</label>-->
+        <!--<input id="scale" type="number" value="20"/>-->
+        <!--<button type="button" onclick="maze_solve()">Solve</button>-->
+    <!--</div>-->
+    <img id="img" src="maze-10x10.png">
+    <!--<canvas id="maze"></canvas>-->
+    <!--<script src="maze.js"></script>-->
+    <canvas id="snw-maze-canvas"></canvas>
+    <script src="snw-maze-renderer.js"></script>
+    <script src="snw-maze.js"></script>
+</body>
+</html>
