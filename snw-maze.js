@@ -66,7 +66,16 @@ function initMaze() {
   //Update the renderer size
   SNW.maze.renderer.setRenderSize(img.width, img.height);
   //Update the render buffer
-  SNW.maze.renderer.setRenderBuffer(temp2);
+  let b = SNW.maze.renderer.getRenderBuffer();
+
+  //Copy maze data to render buffer
+  for(let y = 0; y < mazeRenderData.length; y++){
+    for(let x = 0; x < mazeRenderData[y].length; x++){
+      b[y][x] = mazeRenderData[y][x];
+    }
+  }
+
+  SNW.maze.renderer.setRenderBuffer(b);
 }
 
 SNW.maze.NodeType = {
@@ -76,12 +85,20 @@ SNW.maze.NodeType = {
   PATH: 5
 };
 
+/**
+ * Maze Node class
+ */
 class MazeNode {
   constructor(x, y, type) {
     this.x = x;
     this.y = y;
     this.type = type || SNW.maze.NodeType.NORMAL;
-    this.connections = [];
+    this.connections = {
+      left: null,
+      right: null,
+      up: null,
+      down: null
+    };
   }
 
   /**
@@ -99,7 +116,7 @@ class MazeNode {
     for (let i = this.y + 1; i < y.length; i++) {
       if (y[i] == 0) {
         if (lastWasPath) {
-          this.connections.push(_findNode(this.x, i - 1));
+          this.connections.down = _findNode(this.x, i - 1);
         }
         break;
       } else if (y[i] == 1) {
@@ -110,11 +127,11 @@ class MazeNode {
     //Connections up
     for (let i = this.y - 1; i > -1; i--) {
       if (y[i] == 0 && lastWasPath) {
-        this.connections.push(_findNode(this.x, i + 1));
+        this.connections.up = _findNode(this.x, i + 1);
         break;
       } else if (y[i] == 1) {
         if (i == 0) {
-          this.connections.push(_findNode(this.x, i));
+          this.connections.up = _findNode(this.x, i);
           break;
         }
         lastWasPath = true;
@@ -125,7 +142,7 @@ class MazeNode {
     for (let i = this.x + 1; i < x.length; i++) {
       if (x[i] == 0) {
         if (lastWasPath) {
-          this.connections.push(_findNode(i - 1, this.y));
+          this.connections.right = _findNode(i - 1, this.y);
         }
         break;
       } else if (x[i] == 1) {
@@ -136,11 +153,11 @@ class MazeNode {
     //Connections left
     for (let i = this.x - 1; i > -1; i--) {
       if (x[i] == 0 && lastWasPath) {
-        this.connections.push(_findNode(i + 1, this.y));
+        this.connections.left = _findNode(i + 1, this.y);
         break;
       } else if (x[i] == 1) {
         if (i == 0) {
-          this.connections.push(_findNode(i, this.y));
+          this.connections.left = _findNode(i, this.y);
           break;
         }
         lastWasPath = true;
