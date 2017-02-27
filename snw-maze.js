@@ -327,6 +327,10 @@ function _loadImg(img) {
  * and render the maze
  */
 function doMaze() {
+  let genTime = document.getElementById('genTime');
+  genTime.innerHTML = '';
+
+  let genStartTime = performance.now();
   nodes = [];
   mazeRenderData = [];
 
@@ -347,6 +351,11 @@ function doMaze() {
 
   //Render
   SNW.maze.renderer.render();
+
+  let timeTaken = new Date();
+  let t = performance.now() - genStartTime;
+  timeTaken.setTime(t);
+  genTime.innerHTML = timeTaken.getMinutes() + 'm' + timeTaken.getSeconds() + 's' + timeTaken.getMilliseconds()+ ' Raw: ' + t.toString();
 }
 
 /**

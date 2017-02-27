@@ -41,6 +41,7 @@
             <option>10x10-loop</option>
             <option>10x10-sides</option>
             <option>20x20</option>
+            <option>30x30</option>
             <option>400x400</option>
             <option>test</option>
             <option>1000x1000</option>
@@ -50,13 +51,17 @@
         <input type="number" id="scale" value="20" onchange="setScale(this.value)"/>
     </div>
     <div class="controls">
-        <img id="img" src="mazes/maze-10x10.png">
+        <img id="img" src="mazes/maze-30x30.png">
         <label for="method">Method</label>
         <select id="method" title="Method">
             <option value="flood">Flood</option>
         </select>
         <button onclick="solve()">Solve</button>
         <button onclick="mazeClear()">Clear</button>
+    </div>
+    <div class="controls">
+        <label>Generating:</label>
+        <label id="genTime">00:00:00</label>
     </div>
     <div class="canvas-container">
         <canvas id="snw-maze-canvas"></canvas>
