@@ -28,7 +28,7 @@ function solve(solveNodes) {
   let end = -1;
   for (let i = 0; i < solveNodes.length; i++) {
     solveNodes[i].visited = false;
-    solveNodes[i].pathToNode = [];
+    solveNodes[i].pathToNode = {};
     if (solveNodes[i].type == SNW.maze.NodeType.START) {
       start = i;
     }
@@ -38,26 +38,36 @@ function solve(solveNodes) {
   }
 
   CheckNodes(solveNodes[start]);
-  console.log(solveNodes);
+
+  let retArr = [];
+  MakeRetArr(solveNodes[end] ,retArr);
+  return retArr;
+}
+
+function MakeRetArr(n, arr) {
+  arr.push({x: n.x, y: n.y});
+  if(n.type != SNW.maze.NodeType.START){
+    MakeRetArr(n.pathToNode, arr);
+  }
 }
 
 function CheckNodes(node) {
   node.visited = true;
 
   if (node.connections.left != null && !node.connections.left.visited) {
-    node.connections.left.pathToNode.push(node);
+    node.connections.left.pathToNode = node;
     CheckNodes(node.connections.left);
   }
   if (node.connections.right != null && !node.connections.right.visited) {
-    node.connections.right.pathToNode.push(node);
+    node.connections.right.pathToNode = node;
     CheckNodes(node.connections.right);
   }
   if (node.connections.down != null && !node.connections.down.visited) {
-    node.connections.down.pathToNode.push(node);
+    node.connections.down.pathToNode = node;
     CheckNodes(node.connections.down);
   }
   if (node.connections.up != null && !node.connections.up.visited) {
-    node.connections.up.pathToNode.push(node);
+    node.connections.up.pathToNode = node;
     CheckNodes(node.connections.up);
   }
 }

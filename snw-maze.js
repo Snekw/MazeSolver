@@ -255,6 +255,13 @@ function solve() {
     n.push(nodes[i]);
   }
   let path = SNW.maze.pathFinding[method].solve(n);
+
+  //Update the render buffer with the path
+  let b = SNW.maze.renderer.getRenderBuffer();
+  for(let i = 0; i < path.length; i++){
+    b[path[i].y][path[i].x] = 5;
+  }
+  SNW.maze.renderer.render();
 }
 
 //Create and draw the maze
