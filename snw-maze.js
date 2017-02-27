@@ -105,74 +105,80 @@ class MazeNode {
    * Find the connections this node has
    */
   findConnections() {
-    let y = [];
-    for (let i = 0; i < mazeRenderData.length; i++) {
-      y.push(mazeRenderData[i][this.x]);
-    }
-    let x = mazeRenderData[this.y];
 
-    let lastWasPath = false;
+    let shouldBreak = false;
     //Connections down
-    for (let i = this.y + 1; i < y.length; i++) {
-      if (y[i] == 0) {
-        if (lastWasPath) {
-          this.connections.down = _findNode(this.x, i - 1);
-        }
+    for (let y = this.y + 1; y < mazeRenderData.length; y++) {
+      if (shouldBreak)
         break;
-      } else if (y[i] == 1) {
-        if (i == y.length - 1) {
-          this.connections.down = _findNode(this.x, i);
+
+      for (let i = 0; i < nodes.length; i++) {
+        if (mazeRenderData[y][this.x] == 0) {
+          shouldBreak = true;
           break;
         }
-        lastWasPath = true;
-      }else{
-        break;
+        if (nodes[i].x == this.x && nodes[i].y == y) {
+          this.connections.down = _findNode(this.x, y);
+          shouldBreak = true;
+          break;
+        }
       }
     }
-    lastWasPath = false;
+
+    shouldBreak = false;
     //Connections up
-    for (let i = this.y - 1; i > -1; i--) {
-      if (y[i] == 0 && lastWasPath) {
-        this.connections.up = _findNode(this.x, i + 1);
+    for (let y = this.y - 1; y > -1; y--) {
+      if (shouldBreak)
         break;
-      } else if (y[i] == 1) {
-        if (i == 0) {
-          this.connections.up = _findNode(this.x, i);
+
+      for (let i = 0; i < nodes.length; i++) {
+        if (mazeRenderData[y][this.x] == 0) {
+          shouldBreak = true;
           break;
         }
-        lastWasPath = true;
-      }else{
-        break;
+        if (nodes[i].x == this.x && nodes[i].y == y) {
+          this.connections.up = _findNode(this.x, y);
+          shouldBreak = true;
+          break;
+        }
       }
     }
-    lastWasPath = false;
+
+    shouldBreak = false;
     //Connections right
-    for (let i = this.x + 1; i < x.length; i++) {
-      if (x[i] == 0) {
-        if (lastWasPath) {
-          this.connections.right = _findNode(i - 1, this.y);
-        }
+    for (let x = this.x + 1; x < mazeRenderData[0].length; x++) {
+      if (shouldBreak)
         break;
-      } else if (x[i] == 1) {
-        lastWasPath = true;
-      }else{
-        break;
-      }
-    }
-    lastWasPath = false;
-    //Connections left
-    for (let i = this.x - 1; i > -1; i--) {
-      if (x[i] == 0 && lastWasPath) {
-        this.connections.left = _findNode(i + 1, this.y);
-        break;
-      } else if (x[i] == 1) {
-        if (i == 0) {
-          this.connections.left = _findNode(i, this.y);
+
+      for (let i = 0; i < nodes.length; i++) {
+        if (mazeRenderData[this.y][x] == 0) {
+          shouldBreak = true;
           break;
         }
-        lastWasPath = true;
-      }else{
+        if (nodes[i].x == x && nodes[i].y == this.y) {
+          this.connections.right = _findNode(x, this.y);
+          shouldBreak = true;
+          break;
+        }
+      }
+    }
+
+    shouldBreak = false;
+    //Connections left
+    for (let x = this.x - 1; x > -1; x--) {
+      if (shouldBreak)
         break;
+
+      for (let i = 0; i < nodes.length; i++) {
+        if (mazeRenderData[this.y][x] == 0) {
+          shouldBreak = true;
+          break;
+        }
+        if (nodes[i].x == x && nodes[i].y == this.y) {
+          this.connections.left = _findNode(x, this.y);
+          shouldBreak = true;
+          break;
+        }
       }
     }
   }
