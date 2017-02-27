@@ -32,7 +32,7 @@ let rWidth = 1;
 let rHeight = 1;
 let rCanvas = null;
 
-let rBuffer = [[0,1,1,-1],[0,2,2,0]];
+let rBuffer = [[0, 1, 1, -1], [0, 2, 2, 0]];
 
 /**
  * The rendering process
@@ -50,9 +50,9 @@ function render() {
   for (let y = 0; y < rHeight; y++) {
     for (let x = 0; x < rWidth; x++) {
 
-      switch (rBuffer[y][x]){
+      switch (rBuffer[y][x]) {
         case 0:
-          ctx.fillStyle ='#000000';
+          ctx.fillStyle = '#000000';
           break;
         case 1:
           ctx.fillStyle = '#ffffff';
@@ -68,6 +68,9 @@ function render() {
           break;
         case 5:
           ctx.fillStyle = '#ffeb00';
+          break;
+        case 6:
+          ctx.fillStyle = '#00ff8b';
           break;
         default:
           ctx.fillStyle = '#ff00ff';
@@ -112,9 +115,9 @@ function setSize(width, height) {
 
   let temp = [];
 
-  for(let i = 0; i < rHeight; i++){
+  for (let i = 0; i < rHeight; i++) {
     let t2 = [];
-    for(let d = 0; d < rWidth; d++){
+    for (let d = 0; d < rWidth; d++) {
       t2.push(-1);
     }
     temp.push(t2);
@@ -131,7 +134,7 @@ function setSize(width, height) {
  * @private
  */
 function _setCanvasInfo() {
-  if(rCanvas == null || rCanvas.tagName != 'CANVAS'){
+  if (rCanvas == null || rCanvas.tagName != 'CANVAS') {
     return;
   }
 
@@ -165,7 +168,7 @@ function getRenderBuffer() {
  * @param {[*,*]} newBuffer
  */
 function setRenderBuffer(newBuffer) {
-  if(newBuffer.length == rHeight && newBuffer[0].length == rWidth){
+  if (newBuffer.length == rHeight && newBuffer[0].length == rWidth) {
     rBuffer = newBuffer;
   }
 }

@@ -1,0 +1,15 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #ababab;
+}
+
+.controls {
+    margin: 20px;
+}
+
+.canvas-container{
+    margin: 20px;
+}

@@ -247,6 +247,13 @@ function createNodes() {
   }
 }
 
+class FoundPath {
+  constructor(path, visited) {
+    this.path = path || [];
+    this.visited = visited || [];
+  }
+}
+
 function solve() {
   let methodEl = document.getElementById('method');
   let method = methodEl[methodEl.selectedIndex].value;
@@ -254,11 +261,17 @@ function solve() {
   for (let i = 0; i < nodes.length; i++) {
     n.push(nodes[i]);
   }
-  let path = SNW.maze.pathFinding[method].solve(n);
+  let pathRet = SNW.maze.pathFinding[method].solve(n);
+  
+  let path = pathRet.path;
+  let visited = pathRet.visited;
 
   //Update the render buffer with the path
   let b = SNW.maze.renderer.getRenderBuffer();
-  for(let i = 0; i < path.length; i++){
+  for (let i = 0; i < visited.length; i++) {
+    b[visited[i].y][visited[i].x] = 6;
+  }
+  for (let i = 0; i < path.length; i++) {
     b[path[i].y][path[i].x] = 5;
   }
   SNW.maze.renderer.render();

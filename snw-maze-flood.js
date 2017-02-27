@@ -40,19 +40,36 @@ function solve(solveNodes) {
   CheckNodes(solveNodes[start]);
 
   let retArr = [];
-  MakeRetArr(solveNodes[end] ,retArr);
-  return retArr;
+  let visited = FindVisited(solveNodes);
+  MakeRetArr(solveNodes[end], retArr);
+  return new FoundPath(retArr, visited);
 }
 
 function MakeRetArr(n, arr) {
   arr.push({x: n.x, y: n.y});
-  if(n.type != SNW.maze.NodeType.START){
+  if (n.type != SNW.maze.NodeType.START) {
     MakeRetArr(n.pathToNode, arr);
   }
 }
 
+function FindVisited(n) {
+  let visArr = [];
+  for (let i = 0; i < n.length; i++) {
+    if (n[i].visited === true) {
+      visArr.push({x: n[i].x, y: n[i].y});
+    }
+  }
+  return visArr;
+}
+
+let endFound = false;
+
 function CheckNodes(node) {
   node.visited = true;
+  if (node.type == SNW.maze.NodeType.END || endFound) {
+    endFound = true;
+    return;
+  }
 
   if (node.connections.left != null && !node.connections.left.visited) {
     node.connections.left.pathToNode = node;
