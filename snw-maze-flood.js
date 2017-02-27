@@ -20,12 +20,18 @@ SNW.maze.pathFinding = SNW.maze.pathFinding || {};
 
 SNW.maze.pathFinding.flood = {
   name: 'Flood',
-  solve: solve
+  solve: floodSolve
 };
 
-function solve(solveNodes) {
+/**
+ * The entry point
+ * @param {MazeNode[]} solveNodes -- The nodes we need to solve
+ * @returns {FoundPath} -- The found path and visited nodes
+ */
+function floodSolve(solveNodes) {
   let start = -1;
   let end = -1;
+  endFound = false;
   for (let i = 0; i < solveNodes.length; i++) {
     solveNodes[i].visited = false;
     solveNodes[i].pathToNode = {};
@@ -37,22 +43,32 @@ function solve(solveNodes) {
     }
   }
 
-  CheckNodes(solveNodes[start]);
+  checkNodes(solveNodes[start]);
 
   let retArr = [];
-  let visited = FindVisited(solveNodes);
-  MakeRetArr(solveNodes[end], retArr);
+  let visited = findVisited(solveNodes);
+  makeRetArr(solveNodes[end], retArr);
   return new FoundPath(retArr, visited);
 }
 
-function MakeRetArr(n, arr) {
+/**
+ * Make the found path coordinate array
+ * @param n - nodes
+ * @param arr - the ret array
+ */
+function makeRetArr(n, arr) {
   arr.push({x: n.x, y: n.y});
   if (n.type != SNW.maze.NodeType.START) {
-    MakeRetArr(n.pathToNode, arr);
+    makeRetArr(n.pathToNode, arr);
   }
 }
 
-function FindVisited(n) {
+/**
+ * Find the visited nodes
+ * @param n - nodes
+ * @returns {Array}
+ */
+function findVisited(n) {
   let visArr = [];
   for (let i = 0; i < n.length; i++) {
     if (n[i].visited === true) {
@@ -64,7 +80,11 @@ function FindVisited(n) {
 
 let endFound = false;
 
-function CheckNodes(node) {
+/**
+ * Find the path
+ * @param node - A node
+ */
+function checkNodes(node) {
   node.visited = true;
   if (node.type == SNW.maze.NodeType.END || endFound) {
     endFound = true;
@@ -73,18 +93,18 @@ function CheckNodes(node) {
 
   if (node.connections.left != null && !node.connections.left.visited) {
     node.connections.left.pathToNode = node;
-    CheckNodes(node.connections.left);
+    checkNodes(node.connections.left);
   }
   if (node.connections.right != null && !node.connections.right.visited) {
     node.connections.right.pathToNode = node;
-    CheckNodes(node.connections.right);
+    checkNodes(node.connections.right);
   }
   if (node.connections.down != null && !node.connections.down.visited) {
     node.connections.down.pathToNode = node;
-    CheckNodes(node.connections.down);
+    checkNodes(node.connections.down);
   }
   if (node.connections.up != null && !node.connections.up.visited) {
     node.connections.up.pathToNode = node;
-    CheckNodes(node.connections.up);
+    checkNodes(node.connections.up);
   }
 }

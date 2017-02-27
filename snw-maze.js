@@ -247,6 +247,9 @@ function createNodes() {
   }
 }
 
+/**
+ * Found path class
+ */
 class FoundPath {
   constructor(path, visited) {
     this.path = path || [];
@@ -254,6 +257,9 @@ class FoundPath {
   }
 }
 
+/**
+ * Call the selected path finding method and render results
+ */
 function solve() {
   let methodEl = document.getElementById('method');
   let method = methodEl[methodEl.selectedIndex].value;
@@ -262,7 +268,7 @@ function solve() {
     n.push(nodes[i]);
   }
   let pathRet = SNW.maze.pathFinding[method].solve(n);
-  
+
   let path = pathRet.path;
   let visited = pathRet.visited;
 
@@ -277,20 +283,78 @@ function solve() {
   SNW.maze.renderer.render();
 }
 
-//Create and draw the maze
-initMaze();
-
-//Create the nodes
-createNodes();
-
-//The render buffer
-let b = SNW.maze.renderer.getRenderBuffer();
-
-//Draw the nodes and find the connections
-for (let i = 0; i < nodes.length; i++) {
-  b[nodes[i].y][nodes[i].x] = nodes[i].type;
-  nodes[i].findConnections();
+/**
+ * Image selection form the selection box
+ */
+function selectImage() {
+  let imgSel = document.getElementById('imgSel');
+  let img = imgSel[imgSel.selectedIndex].label;
+  _loadImg('mazes/maze-' + img + '.png');
 }
 
-//Render
-SNW.maze.renderer.render();
+/**
+ * Image selection from local computer
+ * @param ele - The selection box
+ */
+function selectImageFromFile(ele) {
+  console.log(ele);
+  let file = ele.files[0];
+
+  let reader = new FileReader();
+  reader.onload = function (file) {
+    console.log(file);
+    _loadImg(file.target.result);
+  };
+  reader.readAsDataURL(file);
+}
+
+/**
+ * Load image to browser and reload the maze
+ * @param img - The image
+ * @private
+ */
+function _loadImg(img) {
+  let temp = new Image();
+  temp.onload = function () {
+    document.getElementById('img').src = img;
+    doMaze();
+  };
+  temp.src = img;
+}
+
+/**
+ * Do all of the file reading to create the nodes
+ * and render the maze
+ */
+function doMaze() {
+  nodes = [];
+  mazeRenderData = [];
+
+  //Create and draw the maze
+  initMaze();
+
+  //Create the nodes
+  createNodes();
+
+  //The render buffer
+  let b = SNW.maze.renderer.getRenderBuffer();
+
+  //Draw the nodes and find the connections
+  for (let i = 0; i < nodes.length; i++) {
+    b[nodes[i].y][nodes[i].x] = nodes[i].type;
+    nodes[i].findConnections();
+  }
+
+  //Render
+  SNW.maze.renderer.render();
+}
+
+/**
+ * Remove the solved data from maze
+ * -- Reloads the maze
+ */
+function mazeClear() {
+  doMaze();
+}
+
+doMaze();

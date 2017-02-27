@@ -32,12 +32,28 @@
         <!--<button type="button" onclick="maze_solve()">Solve</button>-->
     <!--</div>-->
     <div class="controls">
+        <label for="file">File:</label>
+        <input id="file" type="file" accept="image/png" onchange="selectImageFromFile(this)"/>
+        <br/>
+        <label for="imgSel">Or select image:</label>
+        <select id="imgSel" onchange="selectImage()">
+            <option>10x10</option>
+            <option>10x10-loop</option>
+            <option>10x10-sides</option>
+            <option>20x20</option>
+        </select>
+        <br/>
+        <label for="scale">Render scale:</label>
+        <input type="number" id="scale" value="20" onchange="setScale(this.value)"/>
+    </div>
+    <div class="controls">
         <img id="img" src="mazes/maze-10x10.png">
         <label for="method">Method</label>
         <select id="method" title="Method">
             <option value="flood">Flood</option>
         </select>
         <button onclick="solve()">Solve</button>
+        <button onclick="mazeClear()">Clear</button>
     </div>
     <div class="canvas-container">
         <canvas id="snw-maze-canvas"></canvas>
