@@ -393,7 +393,6 @@ function clearAnimBuffer() {
 function playAnimation() {
   let animSpeed = document.getElementById('animSpeed').value;
   SNW.maze.anim.playAnim(mazeAnimBuffer, animSpeed);
-  mazeAnimBuffer = [];
 }
 
 doMaze();
