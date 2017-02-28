@@ -51,6 +51,7 @@ async function _playAnim(animBuffer, speed) {
   if (animInProgress) {
     return new Promise(resolve => (resolve()));
   }
+  setAnimSpeed(speed);
   animInProgress = true;
 
   let rBuffer = SNW.maze.renderer.getRenderBuffer();
