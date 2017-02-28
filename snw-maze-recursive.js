@@ -18,9 +18,9 @@ window.SNW = window.SNW || {};
 SNW.maze = SNW.maze || {};
 SNW.maze.pathFinding = SNW.maze.pathFinding || {};
 
-SNW.maze.pathFinding.flood = {
-  name: 'Flood',
-  solve: floodSolve
+SNW.maze.pathFinding.recursive = {
+  name: 'Recursive',
+  solve: recursiveSolve
 };
 
 /**
@@ -28,7 +28,7 @@ SNW.maze.pathFinding.flood = {
  * @param {MazeNode[]} solveNodes -- The nodes we need to solve
  * @returns {FoundPath} -- The found path and visited nodes
  */
-function floodSolve(solveNodes) {
+function recursiveSolve(solveNodes) {
   let start = -1;
   let end = -1;
   endFound = false;

@@ -112,31 +112,25 @@ class MazeNode {
    * Find the connections this node has
    */
   findConnections() {
-
-    let shouldBreak = false;
     //Connections down
     for (let y = this.y + 1; y < mazeNodeIndexChart.length; y++) {
-
-      if(mazeRenderData[y][this.x] == 0){
+      if (mazeRenderData[y][this.x] == 0) {
         break;
       }
 
-      if(mazeNodeIndexChart[y][this.x] != -1){
+      if (mazeNodeIndexChart[y][this.x] != -1) {
         this.connections.down = nodes[mazeNodeIndexChart[y][this.x]];
-        shouldBreak = true;
         break;
       }
     }
 
-    shouldBreak = false;
     //Connections up
     for (let y = this.y - 1; y > -1; y--) {
-
-      if(mazeRenderData[y][this.x] == 0){
+      if (mazeRenderData[y][this.x] == 0) {
         break;
       }
 
-      if(mazeNodeIndexChart[y][this.x] != -1){
+      if (mazeNodeIndexChart[y][this.x] != -1) {
         this.connections.up = nodes[mazeNodeIndexChart[y][this.x]];
         break;
       }
@@ -144,12 +138,11 @@ class MazeNode {
 
     //Connections right
     for (let x = this.x + 1; x < mazeNodeIndexChart[this.y].length; x++) {
-
-      if(mazeRenderData[this.y][x] == 0){
+      if (mazeRenderData[this.y][x] == 0) {
         break;
       }
 
-      if(mazeNodeIndexChart[this.y][x] != -1){
+      if (mazeNodeIndexChart[this.y][x] != -1) {
         this.connections.right = nodes[mazeNodeIndexChart[this.y][x]];
         break;
       }
@@ -157,12 +150,11 @@ class MazeNode {
 
     //Connections left
     for (let x = this.x - 1; x > -1; x--) {
-
-      if(mazeRenderData[this.y][x] == 0){
+      if (mazeRenderData[this.y][x] == 0) {
         break;
       }
 
-      if(mazeNodeIndexChart[this.y][x] != -1){
+      if (mazeNodeIndexChart[this.y][x] != -1) {
         this.connections.left = nodes[mazeNodeIndexChart[this.y][x]];
         break;
       }
