@@ -51,7 +51,7 @@
         <input type="number" id="scale" value="20" onchange="setScale(this.value)"/>
     </div>
     <div class="controls">
-        <img id="img" src="mazes/maze-30x30.png">
+        <img id="img" src="mazes/maze-10x10.png">
         <label for="method">Method</label>
         <select id="method" title="Method">
             <option value="flood">Flood</option>
@@ -67,7 +67,7 @@
         <canvas id="snw-maze-canvas"></canvas>
     </div>
     <script src="snw-maze-renderer.js"></script>
-    <script src="snw-maze-flood.js"></script>
+    <script src="snw-maze-recursive.js"></script>
     <script src="snw-maze.js"></script>
 </body>
 </html>

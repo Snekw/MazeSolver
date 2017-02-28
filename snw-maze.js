@@ -23,6 +23,7 @@ SNW.maze.renderer.render();
 
 //Fields
 let mazeRenderData = [];
+let mazeNodeIndexChart = [];
 let nodes = [];
 
 /**
@@ -52,26 +53,32 @@ function initMaze() {
     }
   }
 
-  //Make 2d array representing the pixels
-  let temp2 = [];
-  for (let y = 0; y < img.height; y++) {
-    let t = [];
-    for (let x = 0; x < img.width; x++) {
-      t.push(temp[y * img.width + x]);
-    }
-    temp2.push(t);
-  }
-  mazeRenderData = temp2;
-
   //Update the renderer size
   SNW.maze.renderer.setRenderSize(img.width, img.height);
   //Update the render buffer
   let b = SNW.maze.renderer.getRenderBuffer();
 
-  //Copy maze data to render buffer
-  for (let y = 0; y < mazeRenderData.length; y++) {
-    for (let x = 0; x < mazeRenderData[y].length; x++) {
-      b[y][x] = mazeRenderData[y][x];
+  //Make 2d array representing the pixels
+  let temp2 = [];
+  for (let y = 0; y < img.height; y++) {
+    let t = [];
+    for (let x = 0; x < img.width; x++) {
+      let s = temp[y * img.width + x];
+      t.push(s);
+      //Update the buffer
+      b[y][x] = s;
+    }
+    temp2.push(t);
+  }
+  mazeRenderData = temp2;
+
+  let s = mazeRenderData.length;
+
+  while (s--) {
+    let s2 = mazeRenderData[s].length;
+    mazeNodeIndexChart[s] = [];
+    while (s2--) {
+      mazeNodeIndexChart[s][s2] = -1;
     }
   }
 
@@ -108,93 +115,57 @@ class MazeNode {
 
     let shouldBreak = false;
     //Connections down
-    for (let y = this.y + 1; y < mazeRenderData.length; y++) {
-      if (shouldBreak)
-        break;
+    for (let y = this.y + 1; y < mazeNodeIndexChart.length; y++) {
 
-      for (let i = 0; i < nodes.length; i++) {
-        if (mazeRenderData[y][this.x] == 0) {
-          shouldBreak = true;
-          break;
-        }
-        if (nodes[i].x == this.x && nodes[i].y == y) {
-          this.connections.down = _findNode(this.x, y);
-          shouldBreak = true;
-          break;
-        }
+      if(mazeRenderData[y][this.x] == 0){
+        break;
+      }
+
+      if(mazeNodeIndexChart[y][this.x] != -1){
+        this.connections.down = nodes[mazeNodeIndexChart[y][this.x]];
+        shouldBreak = true;
+        break;
       }
     }
 
     shouldBreak = false;
     //Connections up
     for (let y = this.y - 1; y > -1; y--) {
-      if (shouldBreak)
-        break;
 
-      for (let i = 0; i < nodes.length; i++) {
-        if (mazeRenderData[y][this.x] == 0) {
-          shouldBreak = true;
-          break;
-        }
-        if (nodes[i].x == this.x && nodes[i].y == y) {
-          this.connections.up = _findNode(this.x, y);
-          shouldBreak = true;
-          break;
-        }
+      if(mazeRenderData[y][this.x] == 0){
+        break;
+      }
+
+      if(mazeNodeIndexChart[y][this.x] != -1){
+        this.connections.up = nodes[mazeNodeIndexChart[y][this.x]];
+        break;
       }
     }
 
-    shouldBreak = false;
     //Connections right
-    for (let x = this.x + 1; x < mazeRenderData[0].length; x++) {
-      if (shouldBreak)
-        break;
+    for (let x = this.x + 1; x < mazeNodeIndexChart[this.y].length; x++) {
 
-      for (let i = 0; i < nodes.length; i++) {
-        if (mazeRenderData[this.y][x] == 0) {
-          shouldBreak = true;
-          break;
-        }
-        if (nodes[i].x == x && nodes[i].y == this.y) {
-          this.connections.right = _findNode(x, this.y);
-          shouldBreak = true;
-          break;
-        }
+      if(mazeRenderData[this.y][x] == 0){
+        break;
+      }
+
+      if(mazeNodeIndexChart[this.y][x] != -1){
+        this.connections.right = nodes[mazeNodeIndexChart[this.y][x]];
+        break;
       }
     }
 
-    shouldBreak = false;
     //Connections left
     for (let x = this.x - 1; x > -1; x--) {
-      if (shouldBreak)
+
+      if(mazeRenderData[this.y][x] == 0){
         break;
-
-      for (let i = 0; i < nodes.length; i++) {
-        if (mazeRenderData[this.y][x] == 0) {
-          shouldBreak = true;
-          break;
-        }
-        if (nodes[i].x == x && nodes[i].y == this.y) {
-          this.connections.left = _findNode(x, this.y);
-          shouldBreak = true;
-          break;
-        }
       }
-    }
-  }
-}
 
-/**
- * Find a node at x,y position
- * @param {number} ix
- * @param {number} iy
- * @returns {MazeNode}
- * @private
- */
-function _findNode(ix, iy) {
-  for (let i = 0; i < nodes.length; i++) {
-    if (nodes[i].x == ix && nodes[i].y == iy) {
-      return nodes[i];
+      if(mazeNodeIndexChart[this.y][x] != -1){
+        this.connections.left = nodes[mazeNodeIndexChart[this.y][x]];
+        break;
+      }
     }
   }
 }
@@ -208,8 +179,10 @@ function createNodes() {
       if (mazeRenderData[y][x] == 1) {
         if (y == 0 || x == 0) {
           nodes.push(new MazeNode(x, y, SNW.maze.NodeType.START));
+          mazeNodeIndexChart[y][x] = nodes.length - 1;
         } else if (y == mazeRenderData.length - 1 || x == mazeRenderData[y].length - 1) {
           nodes.push(new MazeNode(x, y, SNW.maze.NodeType.END));
+          mazeNodeIndexChart[y][x] = nodes.length - 1;
         } else {
           let left = false;
           let right = false;
@@ -230,15 +203,20 @@ function createNodes() {
 
           if ((left || right) && (up || down)) {
             nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
+            mazeNodeIndexChart[y][x] = nodes.length - 1;
           } else {
             if (up && !down && !left && !right) {
               nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
+              mazeNodeIndexChart[y][x] = nodes.length - 1;
             } else if (!up && down && !left && !right) {
               nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
+              mazeNodeIndexChart[y][x] = nodes.length - 1;
             } else if (!up && !down && left && !right) {
               nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
+              mazeNodeIndexChart[y][x] = nodes.length - 1;
             } else if (!up && !down && !left && right) {
               nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
+              mazeNodeIndexChart[y][x] = nodes.length - 1;
             }
           }
         }
@@ -340,6 +318,10 @@ function doMaze() {
   //Create the nodes
   createNodes();
 
+  let timeTaken = new Date();
+  let t = performance.now() - genStartTime;
+  timeTaken.setTime(t);
+
   //The render buffer
   let b = SNW.maze.renderer.getRenderBuffer();
 
@@ -352,10 +334,7 @@ function doMaze() {
   //Render
   SNW.maze.renderer.render();
 
-  let timeTaken = new Date();
-  let t = performance.now() - genStartTime;
-  timeTaken.setTime(t);
-  genTime.innerHTML = timeTaken.getMinutes() + 'm' + timeTaken.getSeconds() + 's' + timeTaken.getMilliseconds()+ ' Raw: ' + t.toString();
+  genTime.innerHTML = timeTaken.getMinutes() + 'm' + timeTaken.getSeconds() + 's' + timeTaken.getMilliseconds() + ' Raw: ' + t.toString();
 }
 
 /**
