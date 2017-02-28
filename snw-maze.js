@@ -26,6 +26,10 @@ let mazeRenderData = [];
 let mazeNodeIndexChart = [];
 let nodes = [];
 
+//Animation
+let mazeAnimBuffer = [];
+let recordAnim = true;
+
 /**
  * Load the img data to smaller array and draw the maze
  */
@@ -172,9 +176,17 @@ function createNodes() {
         if (y == 0 || x == 0) {
           nodes.push(new MazeNode(x, y, SNW.maze.NodeType.START));
           mazeNodeIndexChart[y][x] = nodes.length - 1;
+          //Animation
+          if (recordAnim) {
+            mazeAnimBuffer.push(nodes[nodes.length - 1]);
+          }
         } else if (y == mazeRenderData.length - 1 || x == mazeRenderData[y].length - 1) {
           nodes.push(new MazeNode(x, y, SNW.maze.NodeType.END));
           mazeNodeIndexChart[y][x] = nodes.length - 1;
+          //Animation
+          if (recordAnim) {
+            mazeAnimBuffer.push(nodes[nodes.length - 1]);
+          }
         } else {
           let left = false;
           let right = false;
@@ -196,19 +208,39 @@ function createNodes() {
           if ((left || right) && (up || down)) {
             nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
             mazeNodeIndexChart[y][x] = nodes.length - 1;
+            //Animation
+            if (recordAnim) {
+              mazeAnimBuffer.push(nodes[nodes.length - 1]);
+            }
           } else {
             if (up && !down && !left && !right) {
               nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
               mazeNodeIndexChart[y][x] = nodes.length - 1;
+              //Animation
+              if (recordAnim) {
+                mazeAnimBuffer.push(nodes[nodes.length - 1]);
+              }
             } else if (!up && down && !left && !right) {
               nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
               mazeNodeIndexChart[y][x] = nodes.length - 1;
+              //Animation
+              if (recordAnim) {
+                mazeAnimBuffer.push(nodes[nodes.length - 1]);
+              }
             } else if (!up && !down && left && !right) {
               nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
               mazeNodeIndexChart[y][x] = nodes.length - 1;
+              //Animation
+              if (recordAnim) {
+                mazeAnimBuffer.push(nodes[nodes.length - 1]);
+              }
             } else if (!up && !down && !left && right) {
               nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
               mazeNodeIndexChart[y][x] = nodes.length - 1;
+              //Animation
+              if (recordAnim) {
+                mazeAnimBuffer.push(nodes[nodes.length - 1]);
+              }
             }
           }
         }
@@ -221,9 +253,10 @@ function createNodes() {
  * Found path class
  */
 class FoundPath {
-  constructor(path, visited) {
+  constructor(path, visited, animBuffer) {
     this.path = path || [];
     this.visited = visited || [];
+    this.animBuffer = animBuffer || [];
   }
 }
 
@@ -237,10 +270,11 @@ function solve() {
   for (let i = 0; i < nodes.length; i++) {
     n.push(nodes[i]);
   }
-  let pathRet = SNW.maze.pathFinding[method].solve(n);
+  let pathRet = SNW.maze.pathFinding[method].solve(n, recordAnim);
 
   let path = pathRet.path;
   let visited = pathRet.visited;
+  mazeAnimBuffer.push.apply(mazeAnimBuffer, pathRet.animBuffer);
 
   //Update the render buffer with the path
   let b = SNW.maze.renderer.getRenderBuffer();
@@ -299,6 +333,7 @@ function _loadImg(img) {
 function doMaze() {
   let genTime = document.getElementById('genTime');
   genTime.innerHTML = '';
+  mazeAnimBuffer = [];
 
   let genStartTime = performance.now();
   nodes = [];
@@ -335,6 +370,30 @@ function doMaze() {
  */
 function mazeClear() {
   doMaze();
+}
+
+/**
+ * Set the rendering scale
+ * @param scale - Scale
+ */
+function setScale(scale) {
+  SNW.maze.renderer.setRenderScale(scale);
+}
+
+/**
+ * Clear the animation buffer
+ */
+function clearAnimBuffer() {
+  mazeAnimBuffer = [];
+}
+
+/**
+ * Play the current animation buffer
+ */
+function playAnimation() {
+  let animSpeed = document.getElementById('animSpeed').value;
+  SNW.maze.anim.playAnim(mazeAnimBuffer, animSpeed);
+  mazeAnimBuffer = [];
 }
 
 doMaze();

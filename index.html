@@ -25,11 +25,11 @@
 <body>
     <noscript>JS is required! Please enable JavaScript!</noscript>
     <!--<div id="inputs" class="inputs">-->
-        <!--<label for="file">File:</label>-->
-        <!--<input id="file" type="file" accept="image/png"/>-->
-        <!--<label for="scale">Scale:</label>-->
-        <!--<input id="scale" type="number" value="20"/>-->
-        <!--<button type="button" onclick="maze_solve()">Solve</button>-->
+    <!--<label for="file">File:</label>-->
+    <!--<input id="file" type="file" accept="image/png"/>-->
+    <!--<label for="scale">Scale:</label>-->
+    <!--<input id="scale" type="number" value="20"/>-->
+    <!--<button type="button" onclick="maze_solve()">Solve</button>-->
     <!--</div>-->
     <div class="controls">
         <label for="file">File:</label>
@@ -52,12 +52,19 @@
     </div>
     <div class="controls">
         <img id="img" src="mazes/maze-10x10.png">
+        <br/>
         <label for="method">Method</label>
         <select id="method" title="Method">
             <option value="recursive">Recursive</option>
         </select>
         <button onclick="solve()">Solve</button>
         <button onclick="mazeClear()">Clear</button>
+        <br/>
+        <button onclick="playAnimation()">Play animation</button>
+        <button onclick="clearAnimBuffer()">Clear animation buffer</button>
+        <br/>
+        <label for="animSpeed">Speed:</label>
+        <input id="animSpeed" type="number" value="50" onchange="setAnimSpeed(this.value)"/>
     </div>
     <div class="controls">
         <label>Generating:</label>
@@ -68,6 +75,7 @@
     </div>
     <script src="snw-maze-renderer.js"></script>
     <script src="snw-maze-recursive.js"></script>
+    <script src="snw-maze-anim.js"></script>
     <script src="snw-maze.js"></script>
 </body>
 </html>

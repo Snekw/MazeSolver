@@ -18,12 +18,13 @@ window.SNW = window.SNW || {};
 SNW.maze = SNW.maze || {};
 
 SNW.maze.renderer = {
-  render: render,
-  setRenderScale: setScale,
-  setRenderSize: setSize,
-  setRenderCanvasById: setCanvasById,
-  getRenderBuffer: getRenderBuffer,
-  setRenderBuffer: setRenderBuffer
+  render: _render,
+  setRenderScale: _setScale,
+  setRenderSize: _setSize,
+  setRenderCanvasById: _setCanvasById,
+  getRenderBuffer: _getRenderBuffer,
+  setRenderBuffer: _setRenderBuffer,
+  renderBlock: _renderBlock
 };
 
 
@@ -37,7 +38,7 @@ let rBuffer = [[0, 1, 1, -1], [0, 2, 2, 0]];
 /**
  * The rendering process
  */
-function render() {
+function _render() {
   if (rCanvas == null || rCanvas.tagName != 'CANVAS') {
     console.error('Snw-Maze-Renderer: Bad canvas!');
     return;
@@ -49,42 +50,55 @@ function render() {
 
   for (let y = 0; y < rHeight; y++) {
     for (let x = 0; x < rWidth; x++) {
-
-      switch (rBuffer[y][x]) {
-        case 0:
-          ctx.fillStyle = '#000000';
-          break;
-        case 1:
-          ctx.fillStyle = '#ffffff';
-          break;
-        case 2:
-          ctx.fillStyle = '#0000ff';
-          break;
-        case 3:
-          ctx.fillStyle = '#00ffff';
-          break;
-        case 4:
-          ctx.fillStyle = '#ff0000';
-          break;
-        case 5:
-          ctx.fillStyle = '#ffeb00';
-          break;
-        case 6:
-          ctx.fillStyle = '#00ff8b';
-          break;
-        default:
-          ctx.fillStyle = '#ff00ff';
-      }
-      ctx.fillRect(x * rScale, y * rScale, rScale, rScale);
+      _renderBlock(x,y,rBuffer[y][x]);
     }
   }
+}
+
+/**
+ * Render single maze block
+ * @param x
+ * @param y
+ * @param style
+ * @private
+ */
+function _renderBlock(x, y, style) {
+  let ctx = rCanvas.getContext('2d');
+  ctx.width = rCanvas.width;
+  ctx.height = rCanvas.height;
+  switch (style) {
+    case 0:
+      ctx.fillStyle = '#000000';
+      break;
+    case 1:
+      ctx.fillStyle = '#8ba2ff';
+      break;
+    case 2:
+      ctx.fillStyle = '#0000ff';
+      break;
+    case 3:
+      ctx.fillStyle = '#00ffff';
+      break;
+    case 4:
+      ctx.fillStyle = '#ff0000';
+      break;
+    case 5:
+      ctx.fillStyle = '#ffeb00';
+      break;
+    case 6:
+      ctx.fillStyle = '#00ff8b';
+      break;
+    default:
+      ctx.fillStyle = '#ff00ff';
+  }
+  ctx.fillRect(x * rScale, y * rScale, rScale, rScale);
 }
 
 /**
  * Set the render scale
  * @param {number} scale
  */
-function setScale(scale) {
+function _setScale(scale) {
   if (scale >= 1) {
     rScale = scale;
   } else {
@@ -100,7 +114,7 @@ function setScale(scale) {
  * @param {number} width
  * @param {number} height
  */
-function setSize(width, height) {
+function _setSize(width, height) {
   if (width > 1) {
     rWidth = width;
   } else {
@@ -123,7 +137,7 @@ function setSize(width, height) {
     temp.push(t2);
   }
 
-  setRenderBuffer(temp);
+  _setRenderBuffer(temp);
 
   //Update the info so it will be updated on next render
   _setCanvasInfo();
@@ -140,14 +154,14 @@ function _setCanvasInfo() {
 
   rCanvas.width = rWidth * rScale;
   rCanvas.height = rHeight * rScale;
-  render();
+  _render();
 }
 
 /**
  * Set the
  * @param canvasId
  */
-function setCanvasById(canvasId) {
+function _setCanvasById(canvasId) {
   rCanvas = document.getElementById(canvasId);
   if (rCanvas == null) {
     console.error('SNW-Maze-Renderer: Failed to set canvas. Bad id.');
@@ -159,7 +173,7 @@ function setCanvasById(canvasId) {
  * Get the currently used render buffer
  * @returns {[*,*]}
  */
-function getRenderBuffer() {
+function _getRenderBuffer() {
   return rBuffer;
 }
 
@@ -167,7 +181,7 @@ function getRenderBuffer() {
  * Set the currently used buffer
  * @param {[*,*]} newBuffer
  */
-function setRenderBuffer(newBuffer) {
+function _setRenderBuffer(newBuffer) {
   if (newBuffer.length == rHeight && newBuffer[0].length == rWidth) {
     rBuffer = newBuffer;
   }
