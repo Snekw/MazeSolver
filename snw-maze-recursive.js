@@ -97,6 +97,9 @@ let endFound = false;
  * @param lastNode - The node we came from
  */
 function checkNodes(node, floodAnimBuff, lastNode) {
+  if(endFound){
+    return;
+  }
   if (recordAnim && animPathFind) {
     let n = {
       x: node.x,
@@ -108,7 +111,7 @@ function checkNodes(node, floodAnimBuff, lastNode) {
     lastNode = node;
   }
   node.visited = true;
-  if (node.type == SNW.maze.NodeType.END || endFound) {
+  if (node.type == SNW.maze.NodeType.END) {
     endFound = true;
     return;
   }
