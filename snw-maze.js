@@ -28,6 +28,7 @@ let nodes = [];
 
 //Animation
 let mazeAnimBuffer = [];
+let stopAnimProgress = false;
 let recordAnim = true;
 let animNodeFind = true;
 let animNodeLink = true;
@@ -460,9 +461,13 @@ function clearAnimBuffer() {
 /**
  * Play the current animation buffer
  */
-function playAnimation() {
+function startAnim() {
   let animSpeed = document.getElementById('animSpeed').value;
   SNW.maze.anim.playAnim(mazeAnimBuffer, animSpeed);
+}
+
+function stopAnim() {
+  stopAnimProgress = true;
 }
 
 doMaze();

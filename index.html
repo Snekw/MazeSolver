@@ -59,7 +59,8 @@
         <button onclick="solve()">Solve</button>
         <button onclick="mazeClear()">Clear</button>
         <br/>
-        <button onclick="playAnimation()">Play animation</button>
+        <button onclick="startAnim()">Play animation</button>
+        <button onclick="stopAnim()">Stop animation</button>
         <button onclick="clearAnimBuffer()">Clear animation buffer</button>
         <br/>
         <label for="recordAnimation">Record animation</label>
@@ -72,7 +73,7 @@
         <input id="animNodeLink" type="checkbox" />
         <br/>
         <label for="animPathFind">Path finding</label>
-        <input id="animPathFind" type="checkbox" />
+        <input id="animPathFind" type="checkbox" checked/>
         <br/>
         <label for="animFoundPath">Found path</label>
         <input id="animFoundPath" type="checkbox" checked/>

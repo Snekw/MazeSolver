@@ -65,6 +65,10 @@ async function _playAnim(animBuffer, speed) {
   SNW.maze.renderer.render();
 
   for (let i = 0; i < animBuffer.length; i++) {
+    if(stopAnimProgress){
+      stopAnimProgress = false;
+      break;
+    }
     if (animBuffer[i].connNode) {
       SNW.maze.renderer.renderPath(animBuffer[i].x, animBuffer[i].y, animBuffer[i].connNode.x, animBuffer[i].connNode.y, animBuffer[i].type);
     } else {
