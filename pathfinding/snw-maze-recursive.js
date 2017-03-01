@@ -18,17 +18,14 @@ window.SNW = window.SNW || {};
 SNW.maze = SNW.maze || {};
 SNW.maze.pathFinding = SNW.maze.pathFinding || {};
 
-SNW.maze.pathFinding.recursive = {
-  name: 'Recursive',
-  solve: recursiveSolve
-};
+SNW.maze.pathFinding.recursive = new SnwPathFind('Recursive');
 
 /**
  * The entry point
  * @param {MazeNode[]} solveNodes -- The nodes we need to solve
  * @returns {FoundPath} -- The found path and visited nodes
  */
-function recursiveSolve(solveNodes) {
+SNW.maze.pathFinding.recursive.solve = function (solveNodes) {
   let start = -1;
   let end = -1;
   let floodAnimBuff = [];
@@ -44,13 +41,13 @@ function recursiveSolve(solveNodes) {
     }
   }
 
-  checkNodes(solveNodes[start], floodAnimBuff);
+  SNW.maze.pathFinding.recursive.checkNodes(solveNodes[start], floodAnimBuff);
 
   let retArr = [];
-  let visited = findVisited(solveNodes);
-  makeRetArr(solveNodes[end], retArr, floodAnimBuff);
+  let visited = SNW.maze.pathFinding.recursive.findVisited(solveNodes);
+  SNW.maze.pathFinding.recursive.makeRetArr(solveNodes[end], retArr, floodAnimBuff);
   return new FoundPath(retArr, visited, floodAnimBuff);
-}
+};
 
 /**
  * Make the found path coordinate array
@@ -58,7 +55,7 @@ function recursiveSolve(solveNodes) {
  * @param arr - the ret array
  * @param floodAnimBuff - The animation buffer
  */
-function makeRetArr(n, arr, floodAnimBuff) {
+SNW.maze.pathFinding.recursive.makeRetArr = function (n, arr, floodAnimBuff) {
   arr.push({x: n.x, y: n.y});
   if (recordAnim && animFoundPath) {
     floodAnimBuff.push({
@@ -69,16 +66,16 @@ function makeRetArr(n, arr, floodAnimBuff) {
     });
   }
   if (n.type != SNW.maze.NodeType.START) {
-    makeRetArr(n.pathToNode, arr, floodAnimBuff);
+    SNW.maze.pathFinding.recursive.makeRetArr(n.pathToNode, arr, floodAnimBuff);
   }
-}
+};
 
 /**
  * Find the visited nodes
  * @param n - nodes
  * @returns {Array}
  */
-function findVisited(n) {
+SNW.maze.pathFinding.recursive.findVisited = function (n) {
   let visArr = [];
   for (let i = 0; i < n.length; i++) {
     if (n[i].visited === true) {
@@ -86,7 +83,7 @@ function findVisited(n) {
     }
   }
   return visArr;
-}
+};
 
 let endFound = false;
 
@@ -96,8 +93,8 @@ let endFound = false;
  * @param floodAnimBuff - The animation buffer
  * @param lastNode - The node we came from
  */
-function checkNodes(node, floodAnimBuff, lastNode) {
-  if(endFound){
+SNW.maze.pathFinding.recursive.checkNodes = function (node, floodAnimBuff, lastNode) {
+  if (endFound) {
     return;
   }
   if (recordAnim && animPathFind) {
@@ -118,18 +115,18 @@ function checkNodes(node, floodAnimBuff, lastNode) {
 
   if (node.connections.left != null && !node.connections.left.visited) {
     node.connections.left.pathToNode = node;
-    checkNodes(node.connections.left, floodAnimBuff, lastNode);
+    SNW.maze.pathFinding.recursive.checkNodes(node.connections.left, floodAnimBuff, lastNode);
   }
   if (node.connections.right != null && !node.connections.right.visited) {
     node.connections.right.pathToNode = node;
-    checkNodes(node.connections.right, floodAnimBuff, lastNode);
+    SNW.maze.pathFinding.recursive.checkNodes(node.connections.right, floodAnimBuff, lastNode);
   }
   if (node.connections.down != null && !node.connections.down.visited) {
     node.connections.down.pathToNode = node;
-    checkNodes(node.connections.down, floodAnimBuff, lastNode);
+    SNW.maze.pathFinding.recursive.checkNodes(node.connections.down, floodAnimBuff, lastNode);
   }
   if (node.connections.up != null && !node.connections.up.visited) {
     node.connections.up.pathToNode = node;
-    checkNodes(node.connections.up, floodAnimBuff, lastNode);
+    SNW.maze.pathFinding.recursive.checkNodes(node.connections.up, floodAnimBuff, lastNode);
   }
-}
+};

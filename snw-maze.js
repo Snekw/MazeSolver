@@ -470,4 +470,17 @@ function stopAnim() {
   stopAnimProgress = true;
 }
 
+function _updateAvailbaleMethods() {
+  let methodBox = document.getElementById('method');
+  for (let key in SNW.maze.pathFinding) {
+    if (SNW.maze.pathFinding.hasOwnProperty(key)) {
+      let n = document.createElement('option');
+      n.innerHTML = SNW.maze.pathFinding[key].name;
+      n.value = key;
+      methodBox.appendChild(n);
+    }
+  }
+}
+
+_updateAvailbaleMethods();
 doMaze();

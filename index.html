@@ -54,7 +54,6 @@
         <br/>
         <label for="method">Method</label>
         <select id="method" title="Method">
-            <option value="recursive">Recursive</option>
         </select>
         <button onclick="solve()">Solve</button>
         <button onclick="mazeClear()">Clear</button>
@@ -92,7 +91,9 @@
         <canvas id="snw-maze-canvas"></canvas>
     </div>
     <script src="snw-maze-renderer.js"></script>
-    <script src="snw-maze-recursive.js"></script>
+    <script src="snw-maze-pathfind-class.js"></script>
+    <script src="pathfinding/snw-maze-dijkstra.js"></script>
+    <script src="pathfinding/snw-maze-recursive.js"></script>
     <script src="snw-maze-anim.js"></script>
     <script src="snw-maze.js"></script>
 </body>
