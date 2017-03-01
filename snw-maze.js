@@ -124,7 +124,9 @@ class MazeNode {
   findConnections() {
     //Connections down
     if (this.connections.down == null) {
+      let dy = 0;
       for (let y = this.y + 1; y < mazeNodeIndexChart.length; y++) {
+        dy++;
         if (recordAnim && animNodeLink) {
           _findNodeAnim(this.x, y);
         }
@@ -135,6 +137,7 @@ class MazeNode {
 
         if (mazeNodeIndexChart[y][this.x] != -1) {
           this.connections.down = nodes[mazeNodeIndexChart[y][this.x]];
+          this.connections.down.distance = dy;
           nodes[mazeNodeIndexChart[y][this.x]].connections.up = this;
           break;
         }
@@ -143,7 +146,9 @@ class MazeNode {
 
     //Connections up
     if (this.connections.up == null) {
+      let dy = 0;
       for (let y = this.y - 1; y > -1; y--) {
+        dy++;
         if (recordAnim && animNodeLink) {
           _findNodeAnim(this.x, y);
         }
@@ -153,6 +158,7 @@ class MazeNode {
 
         if (mazeNodeIndexChart[y][this.x] != -1) {
           this.connections.up = nodes[mazeNodeIndexChart[y][this.x]];
+          this.connections.up.distance = dy;
           nodes[mazeNodeIndexChart[y][this.x]].connections.down = this;
           break;
         }
@@ -161,7 +167,9 @@ class MazeNode {
 
     //Connections right
     if (this.connections.right == null) {
+      let dx = 0;
       for (let x = this.x + 1; x < mazeNodeIndexChart[this.y].length; x++) {
+        dx++;
         if (recordAnim && animNodeLink) {
           _findNodeAnim(x, this.y);
         }
@@ -171,6 +179,7 @@ class MazeNode {
 
         if (mazeNodeIndexChart[this.y][x] != -1) {
           this.connections.right = nodes[mazeNodeIndexChart[this.y][x]];
+          this.connections.right.distance = dx;
           nodes[mazeNodeIndexChart[this.y][x]].connections.left = this;
           break;
         }
@@ -179,7 +188,9 @@ class MazeNode {
 
     //Connections left
     if (this.connections.left == null) {
+      let dx = 0;
       for (let x = this.x - 1; x > -1; x--) {
+        dx++;
         if (recordAnim && animNodeLink) {
           _findNodeAnim(x, this.y);
         }
@@ -189,6 +200,7 @@ class MazeNode {
 
         if (mazeNodeIndexChart[this.y][x] != -1) {
           this.connections.left = nodes[mazeNodeIndexChart[this.y][x]];
+          this.connections.left.distance = dx;
           nodes[mazeNodeIndexChart[this.y][x]].connections.right = this;
           break;
         }
