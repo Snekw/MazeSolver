@@ -122,63 +122,75 @@ class MazeNode {
    */
   findConnections() {
     //Connections down
-    for (let y = this.y + 1; y < mazeNodeIndexChart.length; y++) {
-      if (recordAnim && animNodeLink) {
-        _findNodeAnim(this.x, y);
-      }
+    if (this.connections.down == null) {
+      for (let y = this.y + 1; y < mazeNodeIndexChart.length; y++) {
+        if (recordAnim && animNodeLink) {
+          _findNodeAnim(this.x, y);
+        }
 
-      if (mazeRenderData[y][this.x] == 0) {
-        break;
-      }
+        if (mazeRenderData[y][this.x] == 0) {
+          break;
+        }
 
-      if (mazeNodeIndexChart[y][this.x] != -1) {
-        this.connections.down = nodes[mazeNodeIndexChart[y][this.x]];
-        break;
+        if (mazeNodeIndexChart[y][this.x] != -1) {
+          this.connections.down = nodes[mazeNodeIndexChart[y][this.x]];
+          nodes[mazeNodeIndexChart[y][this.x]].connections.up = this;
+          break;
+        }
       }
     }
 
     //Connections up
-    for (let y = this.y - 1; y > -1; y--) {
-      if (recordAnim && animNodeLink) {
-        _findNodeAnim(this.x, y);
-      }
-      if (mazeRenderData[y][this.x] == 0) {
-        break;
-      }
+    if (this.connections.up == null) {
+      for (let y = this.y - 1; y > -1; y--) {
+        if (recordAnim && animNodeLink) {
+          _findNodeAnim(this.x, y);
+        }
+        if (mazeRenderData[y][this.x] == 0) {
+          break;
+        }
 
-      if (mazeNodeIndexChart[y][this.x] != -1) {
-        this.connections.up = nodes[mazeNodeIndexChart[y][this.x]];
-        break;
+        if (mazeNodeIndexChart[y][this.x] != -1) {
+          this.connections.up = nodes[mazeNodeIndexChart[y][this.x]];
+          nodes[mazeNodeIndexChart[y][this.x]].connections.down = this;
+          break;
+        }
       }
     }
 
     //Connections right
-    for (let x = this.x + 1; x < mazeNodeIndexChart[this.y].length; x++) {
-      if (recordAnim && animNodeLink) {
-        _findNodeAnim(x, this.y);
-      }
-      if (mazeRenderData[this.y][x] == 0) {
-        break;
-      }
+    if (this.connections.right == null) {
+      for (let x = this.x + 1; x < mazeNodeIndexChart[this.y].length; x++) {
+        if (recordAnim && animNodeLink) {
+          _findNodeAnim(x, this.y);
+        }
+        if (mazeRenderData[this.y][x] == 0) {
+          break;
+        }
 
-      if (mazeNodeIndexChart[this.y][x] != -1) {
-        this.connections.right = nodes[mazeNodeIndexChart[this.y][x]];
-        break;
+        if (mazeNodeIndexChart[this.y][x] != -1) {
+          this.connections.right = nodes[mazeNodeIndexChart[this.y][x]];
+          nodes[mazeNodeIndexChart[this.y][x]].connections.left = this;
+          break;
+        }
       }
     }
 
     //Connections left
-    for (let x = this.x - 1; x > -1; x--) {
-      if (recordAnim && animNodeLink) {
-        _findNodeAnim(x, this.y);
-      }
-      if (mazeRenderData[this.y][x] == 0) {
-        break;
-      }
+    if (this.connections.left == null) {
+      for (let x = this.x - 1; x > -1; x--) {
+        if (recordAnim && animNodeLink) {
+          _findNodeAnim(x, this.y);
+        }
+        if (mazeRenderData[this.y][x] == 0) {
+          break;
+        }
 
-      if (mazeNodeIndexChart[this.y][x] != -1) {
-        this.connections.left = nodes[mazeNodeIndexChart[this.y][x]];
-        break;
+        if (mazeNodeIndexChart[this.y][x] != -1) {
+          this.connections.left = nodes[mazeNodeIndexChart[this.y][x]];
+          nodes[mazeNodeIndexChart[this.y][x]].connections.right = this;
+          break;
+        }
       }
     }
   }
@@ -403,9 +415,6 @@ function doMaze() {
   //Create the nodes
   createNodes();
 
-  let timeTaken = new Date();
-  let t = performance.now() - genStartTime;
-  timeTaken.setTime(t);
 
   //The render buffer
   let b = SNW.maze.renderer.getRenderBuffer();
@@ -416,6 +425,9 @@ function doMaze() {
     nodes[i].findConnections();
   }
 
+  let timeTaken = new Date();
+  let t = performance.now() - genStartTime;
+  timeTaken.setTime(t);
   //Render
   SNW.maze.renderer.render();
 
