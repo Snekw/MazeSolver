@@ -65,9 +65,13 @@ async function _playAnim(animBuffer, speed) {
   SNW.maze.renderer.render();
 
   for (let i = 0; i < animBuffer.length; i++) {
-    SNW.maze.renderer.renderBlock(animBuffer[i].x, animBuffer[i].y, animBuffer[i].type);
-    // rBuffer[animBuffer[i].y][animBuffer[i].x] = animBuffer[i].type;
-    // SNW.maze.renderer.render();
+    if (animBuffer[i].connNode) {
+      SNW.maze.renderer.renderPath(animBuffer[i].x, animBuffer[i].y, animBuffer[i].connNode.x, animBuffer[i].connNode.y, animBuffer[i].type);
+    } else {
+      SNW.maze.renderer.renderBlock(animBuffer[i].x, animBuffer[i].y, animBuffer[i].type);
+    }
+
+    //Delay the animation
     await sleep(animationSpeed);
   }
   animInProgress = false;

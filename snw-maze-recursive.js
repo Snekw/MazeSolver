@@ -64,6 +64,7 @@ function makeRetArr(n, arr, floodAnimBuff) {
     floodAnimBuff.push({
       x: n.x,
       y: n.y,
+      connNode: n.pathToNode,
       type: 5
     });
   }
@@ -93,15 +94,18 @@ let endFound = false;
  * Find the path
  * @param node - A node
  * @param floodAnimBuff - The animation buffer
+ * @param lastNode - The node we came from
  */
-function checkNodes(node, floodAnimBuff) {
+function checkNodes(node, floodAnimBuff, lastNode) {
   if (recordAnim && animPathFind) {
     let n = {
       x: node.x,
       y: node.y,
-      type: 6
+      type: 6,
+      connNode: lastNode
     };
     floodAnimBuff.push(n);
+    lastNode = node;
   }
   node.visited = true;
   if (node.type == SNW.maze.NodeType.END || endFound) {
@@ -111,18 +115,18 @@ function checkNodes(node, floodAnimBuff) {
 
   if (node.connections.left != null && !node.connections.left.visited) {
     node.connections.left.pathToNode = node;
-    checkNodes(node.connections.left, floodAnimBuff);
+    checkNodes(node.connections.left, floodAnimBuff, lastNode);
   }
   if (node.connections.right != null && !node.connections.right.visited) {
     node.connections.right.pathToNode = node;
-    checkNodes(node.connections.right, floodAnimBuff);
+    checkNodes(node.connections.right, floodAnimBuff, lastNode);
   }
   if (node.connections.down != null && !node.connections.down.visited) {
     node.connections.down.pathToNode = node;
-    checkNodes(node.connections.down, floodAnimBuff);
+    checkNodes(node.connections.down, floodAnimBuff, lastNode);
   }
   if (node.connections.up != null && !node.connections.up.visited) {
     node.connections.up.pathToNode = node;
-    checkNodes(node.connections.up, floodAnimBuff);
+    checkNodes(node.connections.up, floodAnimBuff, lastNode);
   }
 }

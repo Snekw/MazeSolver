@@ -24,7 +24,8 @@ SNW.maze.renderer = {
   setRenderCanvasById: _setCanvasById,
   getRenderBuffer: _getRenderBuffer,
   setRenderBuffer: _setRenderBuffer,
-  renderBlock: _renderBlock
+  renderBlock: _renderBlock,
+  renderPath: _renderPath
 };
 
 
@@ -50,9 +51,36 @@ function _render() {
 
   for (let y = 0; y < rHeight; y++) {
     for (let x = 0; x < rWidth; x++) {
-      _renderBlock(x,y,rBuffer[y][x]);
+      _renderBlock(x, y, rBuffer[y][x]);
     }
   }
+}
+
+function _renderPath(x, y, ex, ey, style) {
+  let ax = x;
+  let aax = ex;
+  let ay = y;
+  let aay = ey;
+  //Flip the x an ex so that we can fill left to right
+  if(ex < x){
+    ax = ex;
+    aax = x;
+  }
+  //Flip the y an ey so that we can fill left to right
+  if(ey < y){
+    ay = ey;
+    aay = y;
+  }
+  let dx = aax - ax;
+  let dy = aay - ay;
+  let ctx = rCanvas.getContext('2d');
+  ctx.width = rCanvas.width;
+  ctx.height = rCanvas.height;
+  ctx.fillStyle = _getStyle(style);
+  //Need to add 1 to the delta
+  dx++;
+  dy++;
+  ctx.fillRect(ax * rScale, ay * rScale, dx * rScale, dy * rScale);
 }
 
 /**
@@ -66,32 +94,42 @@ function _renderBlock(x, y, style) {
   let ctx = rCanvas.getContext('2d');
   ctx.width = rCanvas.width;
   ctx.height = rCanvas.height;
+  ctx.fillStyle = _getStyle(style);
+  ctx.fillRect(x * rScale, y * rScale, rScale, rScale);
+}
+
+/**
+ * Get the render style
+ * @param style
+ * @returns {String}
+ * @private
+ */
+function _getStyle(style) {
   switch (style) {
     case 0:
-      ctx.fillStyle = '#000000';
+      return '#000000';
       break;
     case 1:
-      ctx.fillStyle = '#8ba2ff';
+      return '#8ba2ff';
       break;
     case 2:
-      ctx.fillStyle = '#0000ff';
+      return '#0000ff';
       break;
     case 3:
-      ctx.fillStyle = '#00ffff';
+      return '#00ffff';
       break;
     case 4:
-      ctx.fillStyle = '#ff0000';
+      return '#ff0000';
       break;
     case 5:
-      ctx.fillStyle = '#ffeb00';
+      return '#ffeb00';
       break;
     case 6:
-      ctx.fillStyle = '#00ff8b';
+      return '#00ff8b';
       break;
     default:
-      ctx.fillStyle = '#ff00ff';
+      return '#ff00ff';
   }
-  ctx.fillRect(x * rScale, y * rScale, rScale, rScale);
 }
 
 /**
