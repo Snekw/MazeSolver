@@ -303,11 +303,10 @@ function createNodes() {
  * Found path class
  */
 class FoundPath {
-  constructor(path, visited, animBuffer, timeTaken) {
+  constructor(path, visited, animBuffer) {
     this.path = path || [];
     this.visited = visited || [];
     this.animBuffer = animBuffer || [];
-    this.timeTaken = timeTaken || 0.0;
   }
 }
 

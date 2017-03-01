@@ -13,14 +13,16 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 "use strict";
+window.SNW = window.SNW || {};
+SNW.maze = SNW.maze || {};
+SNW.maze.pathFinding = SNW.maze.pathFinding || {};
 
-class SnwPathFind {
-  constructor(name) {
-    this.name = name || 'default';
-  }
+class SnwDijkstra extends SnwPathFind{
+  solve(nodes){
+    this.nodes = nodes;
 
-  solve(nodes) {
-    console.error(this.name + ': SOLVE METHOD NOT SET!');
-    return null;
+    return new FoundPath([],[],[]);
   }
 }
+
+SNW.maze.pathFinding.dijkstra = new SnwDijkstra('Dijkstra');

@@ -18,115 +18,121 @@ window.SNW = window.SNW || {};
 SNW.maze = SNW.maze || {};
 SNW.maze.pathFinding = SNW.maze.pathFinding || {};
 
-SNW.maze.pathFinding.recursive = new SnwPathFind('Recursive');
-
 /**
- * The entry point
- * @param {MazeNode[]} solveNodes -- The nodes we need to solve
- * @returns {FoundPath} -- The found path and visited nodes
+ * Recursive path find
  */
-SNW.maze.pathFinding.recursive.solve = function (solveNodes) {
-  let start = -1;
-  let end = -1;
-  let floodAnimBuff = [];
-  endFound = false;
-  for (let i = 0; i < solveNodes.length; i++) {
-    solveNodes[i].visited = false;
-    solveNodes[i].pathToNode = {};
-    if (solveNodes[i].type == SNW.maze.NodeType.START) {
-      start = i;
+class SnwRecursive extends SnwPathFind {
+  /**
+   * Overrides the default solve function
+   * @param solveNodes - Nodes the maze has
+   * @returns {FoundPath}
+   */
+  solve(solveNodes) {
+    this.start = -1;
+    this.end = -1;
+    this.nodes = solveNodes;
+    this.endFound = false;
+    this.floodAnimBuff = [];
+
+    for (let i = 0; i < this.nodes.length; i++) {
+      solveNodes[i].visited = false;
+      solveNodes[i].pathToNode = {};
+      if (this.nodes[i].type == SNW.maze.NodeType.START) {
+        this.start = i;
+      }
+      if (this.nodes[i].type == SNW.maze.NodeType.END) {
+        this.end = i;
+      }
     }
-    if (solveNodes[i].type == SNW.maze.NodeType.END) {
-      end = i;
+
+    this._checkNodes(this.nodes[this.start]);
+
+    let retArr = [];
+    let visited = this._findVisited();
+    this._makeRetArr(this.nodes[this.end], retArr);
+    return new FoundPath(retArr, visited, this.floodAnimBuff);
+  }
+
+  /**
+   * Make the returned path array
+   * @param n - Current node
+   * @param arr - The return array
+   * @private
+   */
+  _makeRetArr(n, arr) {
+    arr.push({x: n.x, y: n.y});
+    if (recordAnim && animFoundPath) {
+      this.floodAnimBuff.push({
+        x: n.x,
+        y: n.y,
+        connNode: n.pathToNode,
+        type: 5
+      });
     }
-  }
-
-  SNW.maze.pathFinding.recursive.checkNodes(solveNodes[start], floodAnimBuff);
-
-  let retArr = [];
-  let visited = SNW.maze.pathFinding.recursive.findVisited(solveNodes);
-  SNW.maze.pathFinding.recursive.makeRetArr(solveNodes[end], retArr, floodAnimBuff);
-  return new FoundPath(retArr, visited, floodAnimBuff);
-};
-
-/**
- * Make the found path coordinate array
- * @param n - nodes
- * @param arr - the ret array
- * @param floodAnimBuff - The animation buffer
- */
-SNW.maze.pathFinding.recursive.makeRetArr = function (n, arr, floodAnimBuff) {
-  arr.push({x: n.x, y: n.y});
-  if (recordAnim && animFoundPath) {
-    floodAnimBuff.push({
-      x: n.x,
-      y: n.y,
-      connNode: n.pathToNode,
-      type: 5
-    });
-  }
-  if (n.type != SNW.maze.NodeType.START) {
-    SNW.maze.pathFinding.recursive.makeRetArr(n.pathToNode, arr, floodAnimBuff);
-  }
-};
-
-/**
- * Find the visited nodes
- * @param n - nodes
- * @returns {Array}
- */
-SNW.maze.pathFinding.recursive.findVisited = function (n) {
-  let visArr = [];
-  for (let i = 0; i < n.length; i++) {
-    if (n[i].visited === true) {
-      visArr.push({x: n[i].x, y: n[i].y});
+    if (n.type != SNW.maze.NodeType.START) {
+      this._makeRetArr(n.pathToNode, arr);
     }
   }
-  return visArr;
-};
 
-let endFound = false;
-
-/**
- * Find the path
- * @param node - A node
- * @param floodAnimBuff - The animation buffer
- * @param lastNode - The node we came from
- */
-SNW.maze.pathFinding.recursive.checkNodes = function (node, floodAnimBuff, lastNode) {
-  if (endFound) {
-    return;
-  }
-  if (recordAnim && animPathFind) {
-    let n = {
-      x: node.x,
-      y: node.y,
-      type: 6,
-      connNode: lastNode
-    };
-    floodAnimBuff.push(n);
-    lastNode = node;
-  }
-  node.visited = true;
-  if (node.type == SNW.maze.NodeType.END) {
-    endFound = true;
-    return;
+  /**
+   * Find visited nodes
+   * @returns {Array}
+   * @private
+   */
+  _findVisited() {
+    let visArr = [];
+    for (let i = 0; i < this.nodes.length; i++) {
+      if (this.nodes[i].visited === true) {
+        visArr.push({x: this.nodes[i].x, y: this.nodes[i].y});
+      }
+    }
+    return visArr;
   }
 
-  if (node.connections.left != null && !node.connections.left.visited) {
-    node.connections.left.pathToNode = node;
-    SNW.maze.pathFinding.recursive.checkNodes(node.connections.left, floodAnimBuff, lastNode);
+  /**
+   * The actual path find method
+   * @param node - Current node
+   * @param lastNode - Last node
+   * @private
+   */
+  _checkNodes(node, lastNode) {
+    if (this.endFound) {
+      return;
+    }
+    if (recordAnim && animPathFind) {
+      let n = {
+        x: node.x,
+        y: node.y,
+        type: 6,
+        connNode: lastNode
+      };
+      this.floodAnimBuff.push(n);
+      lastNode = node;
+    }
+    node.visited = true;
+    if (node.type == SNW.maze.NodeType.END) {
+      this.endFound = true;
+      return;
+    }
+
+    if (node.connections.left != null && !node.connections.left.visited) {
+      node.connections.left.pathToNode = node;
+      this._checkNodes(node.connections.left, lastNode);
+    }
+    if (node.connections.right != null && !node.connections.right.visited) {
+      node.connections.right.pathToNode = node;
+      this._checkNodes(node.connections.right, lastNode);
+    }
+    if (node.connections.down != null && !node.connections.down.visited) {
+      node.connections.down.pathToNode = node;
+      this._checkNodes(node.connections.down, lastNode);
+    }
+    if (node.connections.up != null && !node.connections.up.visited) {
+      node.connections.up.pathToNode = node;
+      this._checkNodes(node.connections.up, lastNode);
+    }
   }
-  if (node.connections.right != null && !node.connections.right.visited) {
-    node.connections.right.pathToNode = node;
-    SNW.maze.pathFinding.recursive.checkNodes(node.connections.right, floodAnimBuff, lastNode);
-  }
-  if (node.connections.down != null && !node.connections.down.visited) {
-    node.connections.down.pathToNode = node;
-    SNW.maze.pathFinding.recursive.checkNodes(node.connections.down, floodAnimBuff, lastNode);
-  }
-  if (node.connections.up != null && !node.connections.up.visited) {
-    node.connections.up.pathToNode = node;
-    SNW.maze.pathFinding.recursive.checkNodes(node.connections.up, floodAnimBuff, lastNode);
-  }
-};
+}
+
+
+SNW.maze.pathFinding.recursive = new SnwRecursive('Recursive');
