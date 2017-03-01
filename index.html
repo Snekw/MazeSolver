@@ -25,7 +25,7 @@
 <body>
     <noscript>JS is required! Please enable JavaScript!</noscript>
     <div class="source">
-        <h2>Source for this site: <a href="https://github.com/Snekw/MazeSolver">Github</a> </h2>
+        <h2>Source for this site: <a href="https://github.com/Snekw/MazeSolver">Github</a></h2>
     </div>
     <div class="controls">
         <label for="file">File:</label>
@@ -59,12 +59,30 @@
         <button onclick="playAnimation()">Play animation</button>
         <button onclick="clearAnimBuffer()">Clear animation buffer</button>
         <br/>
-        <label for="animSpeed">Speed:</label>
+        <label for="recordAnimation">Record animation</label>
+        <input id="recordAnimation" type="checkbox" checked/>
+        <br/>
+        <label for="animNodeFind">Node search</label>
+        <input id="animNodeFind" type="checkbox"/>
+        <br/>
+        <label for="animNodeLink">Node link</label>
+        <input id="animNodeLink" type="checkbox" checked/>
+        <br/>
+        <label for="animPathFind">Path finding</label>
+        <input id="animPathFind" type="checkbox" checked/>
+        <br/>
+        <label for="animFoundPath">Found path</label>
+        <input id="animFoundPath" type="checkbox" checked/>
+        <br/>
+        <label for="animSpeed">Animation speed:</label>
         <input id="animSpeed" type="number" value="50" onchange="setAnimSpeed(this.value)"/>
     </div>
     <div class="controls">
         <label>Generating:</label>
         <label id="genTime">00:00:00</label>
+        <br/>
+        <label>Path finding:</label>
+        <label id="pathTime">00:00:00</label>
     </div>
     <div class="canvas-container">
         <canvas id="snw-maze-canvas"></canvas>

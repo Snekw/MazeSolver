@@ -27,9 +27,8 @@ SNW.maze.pathFinding.recursive = {
  * The entry point
  * @param {MazeNode[]} solveNodes -- The nodes we need to solve
  * @returns {FoundPath} -- The found path and visited nodes
- * @param anim - Whether animation is recorded or not
  */
-function recursiveSolve(solveNodes, anim) {
+function recursiveSolve(solveNodes) {
   let start = -1;
   let end = -1;
   let floodAnimBuff = [];
@@ -45,11 +44,11 @@ function recursiveSolve(solveNodes, anim) {
     }
   }
 
-  checkNodes(solveNodes[start], anim, floodAnimBuff);
+  checkNodes(solveNodes[start], floodAnimBuff);
 
   let retArr = [];
   let visited = findVisited(solveNodes);
-  makeRetArr(solveNodes[end], retArr, anim, floodAnimBuff);
+  makeRetArr(solveNodes[end], retArr, floodAnimBuff);
   return new FoundPath(retArr, visited, floodAnimBuff);
 }
 
@@ -57,12 +56,11 @@ function recursiveSolve(solveNodes, anim) {
  * Make the found path coordinate array
  * @param n - nodes
  * @param arr - the ret array
- * @param anim - Whether animation is recorded or not
  * @param floodAnimBuff - The animation buffer
  */
-function makeRetArr(n, arr, anim, floodAnimBuff) {
+function makeRetArr(n, arr, floodAnimBuff) {
   arr.push({x: n.x, y: n.y});
-  if (anim) {
+  if (recordAnim && animFoundPath) {
     floodAnimBuff.push({
       x: n.x,
       y: n.y,
@@ -70,7 +68,7 @@ function makeRetArr(n, arr, anim, floodAnimBuff) {
     });
   }
   if (n.type != SNW.maze.NodeType.START) {
-    makeRetArr(n.pathToNode, arr, anim, floodAnimBuff);
+    makeRetArr(n.pathToNode, arr, floodAnimBuff);
   }
 }
 
@@ -94,11 +92,10 @@ let endFound = false;
 /**
  * Find the path
  * @param node - A node
- * @param anim - Whether animation is recorded or not
  * @param floodAnimBuff - The animation buffer
  */
-function checkNodes(node, anim, floodAnimBuff) {
-  if (anim) {
+function checkNodes(node, floodAnimBuff) {
+  if (recordAnim && animPathFind) {
     let n = {
       x: node.x,
       y: node.y,
@@ -114,18 +111,18 @@ function checkNodes(node, anim, floodAnimBuff) {
 
   if (node.connections.left != null && !node.connections.left.visited) {
     node.connections.left.pathToNode = node;
-    checkNodes(node.connections.left, anim, floodAnimBuff);
+    checkNodes(node.connections.left, floodAnimBuff);
   }
   if (node.connections.right != null && !node.connections.right.visited) {
     node.connections.right.pathToNode = node;
-    checkNodes(node.connections.right, anim, floodAnimBuff);
+    checkNodes(node.connections.right, floodAnimBuff);
   }
   if (node.connections.down != null && !node.connections.down.visited) {
     node.connections.down.pathToNode = node;
-    checkNodes(node.connections.down, anim, floodAnimBuff);
+    checkNodes(node.connections.down, floodAnimBuff);
   }
   if (node.connections.up != null && !node.connections.up.visited) {
     node.connections.up.pathToNode = node;
-    checkNodes(node.connections.up, anim, floodAnimBuff);
+    checkNodes(node.connections.up, floodAnimBuff);
   }
 }

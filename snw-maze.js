@@ -29,6 +29,10 @@ let nodes = [];
 //Animation
 let mazeAnimBuffer = [];
 let recordAnim = true;
+let animNodeFind = true;
+let animNodeLink = true;
+let animPathFind = true;
+let animFoundPath = true;
 
 /**
  * Load the img data to smaller array and draw the maze
@@ -118,6 +122,10 @@ class MazeNode {
   findConnections() {
     //Connections down
     for (let y = this.y + 1; y < mazeNodeIndexChart.length; y++) {
+      if (recordAnim && animNodeLink) {
+        _findNodeAnim(this.x, y);
+      }
+
       if (mazeRenderData[y][this.x] == 0) {
         break;
       }
@@ -130,6 +138,9 @@ class MazeNode {
 
     //Connections up
     for (let y = this.y - 1; y > -1; y--) {
+      if (recordAnim && animNodeLink) {
+        _findNodeAnim(this.x, y);
+      }
       if (mazeRenderData[y][this.x] == 0) {
         break;
       }
@@ -142,6 +153,9 @@ class MazeNode {
 
     //Connections right
     for (let x = this.x + 1; x < mazeNodeIndexChart[this.y].length; x++) {
+      if (recordAnim && animNodeLink) {
+        _findNodeAnim(x, this.y);
+      }
       if (mazeRenderData[this.y][x] == 0) {
         break;
       }
@@ -154,6 +168,9 @@ class MazeNode {
 
     //Connections left
     for (let x = this.x - 1; x > -1; x--) {
+      if (recordAnim && animNodeLink) {
+        _findNodeAnim(x, this.y);
+      }
       if (mazeRenderData[this.y][x] == 0) {
         break;
       }
@@ -163,6 +180,25 @@ class MazeNode {
         break;
       }
     }
+  }
+}
+
+/**
+ * findNode function animation recording
+ * @param x
+ * @param y
+ * @private
+ */
+function _findNodeAnim(x, y) {
+  if (recordAnim && animNodeLink) {
+    mazeAnimBuffer.push({x: x, y: y, type: 3});
+    let t = 1;
+    if (mazeRenderData[y][x] == 0) {
+      t = 0;
+    } else if (mazeNodeIndexChart[y][x] != -1) {
+      t = 2;
+    }
+    mazeAnimBuffer.push({x: x, y: y, type: t});
   }
 }
 
@@ -177,14 +213,14 @@ function createNodes() {
           nodes.push(new MazeNode(x, y, SNW.maze.NodeType.START));
           mazeNodeIndexChart[y][x] = nodes.length - 1;
           //Animation
-          if (recordAnim) {
+          if (recordAnim && animNodeFind) {
             mazeAnimBuffer.push(nodes[nodes.length - 1]);
           }
         } else if (y == mazeRenderData.length - 1 || x == mazeRenderData[y].length - 1) {
           nodes.push(new MazeNode(x, y, SNW.maze.NodeType.END));
           mazeNodeIndexChart[y][x] = nodes.length - 1;
           //Animation
-          if (recordAnim) {
+          if (recordAnim && animNodeFind) {
             mazeAnimBuffer.push(nodes[nodes.length - 1]);
           }
         } else {
@@ -209,7 +245,7 @@ function createNodes() {
             nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
             mazeNodeIndexChart[y][x] = nodes.length - 1;
             //Animation
-            if (recordAnim) {
+            if (recordAnim && animNodeFind) {
               mazeAnimBuffer.push(nodes[nodes.length - 1]);
             }
           } else {
@@ -217,28 +253,28 @@ function createNodes() {
               nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
               mazeNodeIndexChart[y][x] = nodes.length - 1;
               //Animation
-              if (recordAnim) {
+              if (recordAnim && animNodeFind) {
                 mazeAnimBuffer.push(nodes[nodes.length - 1]);
               }
             } else if (!up && down && !left && !right) {
               nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
               mazeNodeIndexChart[y][x] = nodes.length - 1;
               //Animation
-              if (recordAnim) {
+              if (recordAnim && animNodeFind) {
                 mazeAnimBuffer.push(nodes[nodes.length - 1]);
               }
             } else if (!up && !down && left && !right) {
               nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
               mazeNodeIndexChart[y][x] = nodes.length - 1;
               //Animation
-              if (recordAnim) {
+              if (recordAnim && animNodeFind) {
                 mazeAnimBuffer.push(nodes[nodes.length - 1]);
               }
             } else if (!up && !down && !left && right) {
               nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
               mazeNodeIndexChart[y][x] = nodes.length - 1;
               //Animation
-              if (recordAnim) {
+              if (recordAnim && animNodeFind) {
                 mazeAnimBuffer.push(nodes[nodes.length - 1]);
               }
             }
@@ -253,10 +289,11 @@ function createNodes() {
  * Found path class
  */
 class FoundPath {
-  constructor(path, visited, animBuffer) {
+  constructor(path, visited, animBuffer, timeTaken) {
     this.path = path || [];
     this.visited = visited || [];
     this.animBuffer = animBuffer || [];
+    this.timeTaken = timeTaken || 0.0;
   }
 }
 
@@ -264,13 +301,21 @@ class FoundPath {
  * Call the selected path finding method and render results
  */
 function solve() {
+  recordAnim = document.getElementById('recordAnimation').checked;
+  animNodeFind = document.getElementById('animNodeFind').checked;
+  animNodeLink = document.getElementById('animNodeLink').checked;
+  animPathFind = document.getElementById('animPathFind').checked;
+  animFoundPath = document.getElementById('animFoundPath').checked;
+
   let methodEl = document.getElementById('method');
   let method = methodEl[methodEl.selectedIndex].value;
   let n = [];
   for (let i = 0; i < nodes.length; i++) {
     n.push(nodes[i]);
   }
-  let pathRet = SNW.maze.pathFinding[method].solve(n, recordAnim);
+  let startTime = performance.now();
+  let pathRet = SNW.maze.pathFinding[method].solve(n);
+  let endTime = performance.now();
 
   let path = pathRet.path;
   let visited = pathRet.visited;
@@ -285,6 +330,12 @@ function solve() {
     b[path[i].y][path[i].x] = 5;
   }
   SNW.maze.renderer.render();
+
+  let t = endTime - startTime;
+  let timeTaken = new Date();
+  timeTaken.setTime(t);
+  document.getElementById('pathTime').innerHTML = timeTaken.getMinutes() + 'm' + timeTaken.getSeconds() + 's' + timeTaken.getMilliseconds() + ' Raw: ' + t.toString();
+
 }
 
 /**
@@ -334,6 +385,12 @@ function doMaze() {
   let genTime = document.getElementById('genTime');
   genTime.innerHTML = '';
   mazeAnimBuffer = [];
+
+  recordAnim = document.getElementById('recordAnimation').checked;
+  animNodeFind = document.getElementById('animNodeFind').checked;
+  animNodeLink = document.getElementById('animNodeLink').checked;
+  animPathFind = document.getElementById('animPathFind').checked;
+  animFoundPath = document.getElementById('animFoundPath').checked;
 
   let genStartTime = performance.now();
   nodes = [];
