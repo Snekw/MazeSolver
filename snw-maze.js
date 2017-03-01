@@ -82,6 +82,7 @@ function initMaze() {
 
   let s = mazeRenderData.length;
 
+  mazeNodeIndexChart = [];
   while (s--) {
     let s2 = mazeRenderData[s].length;
     mazeNodeIndexChart[s] = [];
