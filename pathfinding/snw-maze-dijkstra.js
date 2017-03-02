@@ -79,11 +79,10 @@ class SnwDijkstra extends SnwPathFind {
       for(let key in this.workSet[i].connections){
         if(this.workSet[i].connections.hasOwnProperty(key)){
           if(this.workSet[i].connections[key] != null){
-            if (this.workSet[i].dDistance + this.workSet[i].connections[key].distance < this.workSet[i].connections[key].dDistance) {
-              this.workSet[i].connections[key].dDistance = this.workSet[i].dDistance + this.workSet[i].connections[key].distance;
+            if (this.workSet[i].dDistance + this.workSet[i].connections[key].distance[key] < this.workSet[i].connections[key].dDistance) {
+              this.workSet[i].connections[key].dDistance = this.workSet[i].dDistance + this.workSet[i].connections[key].distance[key];
               this.workSet[i].connections[key].via = this.workSet[i];
             }
-
             //Push the node to work set
             if (!this.workSet[i].connections[key].visited) {
               this.workSet.push(this.workSet[i].connections[key]);
