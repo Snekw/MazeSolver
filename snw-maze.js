@@ -139,6 +139,7 @@ class MazeNode {
           this.connections.down = nodes[mazeNodeIndexChart[y][this.x]];
           this.connections.down.distance = dy;
           nodes[mazeNodeIndexChart[y][this.x]].connections.up = this;
+          nodes[mazeNodeIndexChart[y][this.x]].connections.up.distance = dy;
           break;
         }
       }
@@ -160,6 +161,7 @@ class MazeNode {
           this.connections.up = nodes[mazeNodeIndexChart[y][this.x]];
           this.connections.up.distance = dy;
           nodes[mazeNodeIndexChart[y][this.x]].connections.down = this;
+          nodes[mazeNodeIndexChart[y][this.x]].connections.down.distance = dy;
           break;
         }
       }
@@ -181,6 +183,7 @@ class MazeNode {
           this.connections.right = nodes[mazeNodeIndexChart[this.y][x]];
           this.connections.right.distance = dx;
           nodes[mazeNodeIndexChart[this.y][x]].connections.left = this;
+          nodes[mazeNodeIndexChart[this.y][x]].connections.left.distance = dx;
           break;
         }
       }
@@ -202,6 +205,7 @@ class MazeNode {
           this.connections.left = nodes[mazeNodeIndexChart[this.y][x]];
           this.connections.left.distance = dx;
           nodes[mazeNodeIndexChart[this.y][x]].connections.right = this;
+          nodes[mazeNodeIndexChart[this.y][x]].connections.right.distance = dx;
           break;
         }
       }
@@ -237,6 +241,7 @@ function createNodes() {
       if (mazeRenderData[y][x] == 1) {
         if (y == 0 || x == 0) {
           nodes.push(new MazeNode(x, y, SNW.maze.NodeType.START));
+          nodes[nodes.length - 1].distance = 0;
           mazeNodeIndexChart[y][x] = nodes.length - 1;
           //Animation
           if (recordAnim && animNodeFind) {
