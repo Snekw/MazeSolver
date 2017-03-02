@@ -344,6 +344,7 @@ class FoundPath {
  * Call the selected path finding method and render results
  */
 function solve() {
+  mazeAnimBuffer = [];
   recordAnim = document.getElementById('recordAnimation').checked;
   animNodeFind = document.getElementById('animNodeFind').checked;
   animNodeLink = document.getElementById('animNodeLink').checked;
@@ -364,15 +365,13 @@ function solve() {
   let visited = pathRet.visited;
   mazeAnimBuffer.push.apply(mazeAnimBuffer, pathRet.animBuffer);
 
-  //Update the render buffer with the path
-  let b = SNW.maze.renderer.getRenderBuffer();
+  //Render the visited paths and found path
   for (let i = 0; i < visited.length; i++) {
-    b[visited[i].y][visited[i].x] = 6;
+    SNW.maze.renderer.renderPath(visited[i].x, visited[i].y, visited[i].connNode.x, visited[i].connNode.y, 6);
   }
   for (let i = 0; i < path.length; i++) {
-    b[path[i].y][path[i].x] = 5;
+    SNW.maze.renderer.renderPath(path[i].x, path[i].y, path[i].connNode.x, path[i].connNode.y, 5);
   }
-  SNW.maze.renderer.render();
 
   let t = endTime - startTime;
   let timeTaken = new Date();

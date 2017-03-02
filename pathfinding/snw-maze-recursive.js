@@ -60,14 +60,31 @@ class SnwRecursive extends SnwPathFind {
    * @private
    */
   _makeRetArr(n, arr) {
-    arr.push({x: n.x, y: n.y});
-    if (recordAnim && animFoundPath) {
-      this.floodAnimBuff.push({
+    let n2 = {};
+    if(n.pathToNode){
+      n2 = {
         x: n.x,
-        y: n.y,
-        connNode: n.pathToNode,
-        type: 5
-      });
+        y:  n.y,
+        type: 5,
+        connNode:  {
+          x: n.pathToNode.x,
+          y: n.pathToNode.y
+        }
+      };
+    }else{
+      n2 = {
+        x: n.x,
+        y:  n.y,
+        type: 5,
+        connNode:  {
+          x: n.x,
+          y: n.y
+        }
+      };
+    }
+    arr.push(n2);
+    if (recordAnim && animFoundPath) {
+      this.floodAnimBuff.push(n2);
     }
     if (n.type != SNW.maze.NodeType.START) {
       this._makeRetArr(n.pathToNode, arr);
@@ -83,7 +100,30 @@ class SnwRecursive extends SnwPathFind {
     let visArr = [];
     for (let i = 0; i < this.nodes.length; i++) {
       if (this.nodes[i].visited === true) {
-        visArr.push({x: this.nodes[i].x, y: this.nodes[i].y});
+        let n2 = {};
+        let n = this.nodes[i];
+        if(n.pathToNode){
+          n2 = {
+            x: n.x,
+            y:  n.y,
+            type: 5,
+            connNode:  {
+              x: n.pathToNode.x,
+              y: n.pathToNode.y
+            }
+          };
+        }else{
+          n2 = {
+            x: n.x,
+            y:  n.y,
+            type: 5,
+            connNode:  {
+              x: n.x,
+              y: n.y
+            }
+          };
+        }
+        visArr.push(n2);
       }
     }
     return visArr;

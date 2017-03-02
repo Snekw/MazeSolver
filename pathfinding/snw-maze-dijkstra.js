@@ -67,12 +67,28 @@ class SnwDijkstra extends SnwPathFind {
         break;
       }
       if (recordAnim && animPathFind) {
-        let n = {
-          x: this.workSet[i].x,
-          y:  this.workSet[i].y,
-          type: 6,
-          connNode:  this.workSet[i].via
-        };
+        let n = {};
+        if(this.workSet[i].via){
+          n = {
+            x: this.workSet[i].x,
+            y:  this.workSet[i].y,
+            type: 6,
+            connNode:  {
+              x: this.workSet[i].via.x,
+              y: this.workSet[i].via.y
+            }
+          };
+        }else{
+          n = {
+            x: this.workSet[i].x,
+            y:  this.workSet[i].y,
+            type: 6,
+            connNode:  {
+              x: this.workSet[i].x,
+              y: this.workSet[i].y
+            }
+          };
+        }
         this.animBuff.push(n);
       }
 
@@ -97,14 +113,31 @@ class SnwDijkstra extends SnwPathFind {
   }
 
   _makeRetArr(n) {
-    this.retArr.push({x: n.x, y: n.y});
-    if (recordAnim && animFoundPath) {
-      this.animBuff.push({
+    let n2 = {};
+    if(n.via){
+      n2 = {
         x: n.x,
-        y: n.y,
-        connNode: n.via,
-        type: 5
-      });
+        y:  n.y,
+        type: 5,
+        connNode:  {
+          x: n.via.x,
+          y: n.via.y
+        }
+      };
+    }else{
+      n2 = {
+        x: n.x,
+        y:  n.y,
+        type: 5,
+        connNode:  {
+          x: n.x,
+          y: n.y
+        }
+      };
+    }
+    this.retArr.push(n2);
+    if (recordAnim && animFoundPath) {
+      this.animBuff.push(n2);
     }
     if (n.type != SNW.maze.NodeType.START) {
       this._makeRetArr(n.via);
@@ -120,7 +153,30 @@ class SnwDijkstra extends SnwPathFind {
     let visArr = [];
     for (let i = 0; i < this.nodes.length; i++) {
       if (this.nodes[i].visited === true) {
-        visArr.push({x: this.nodes[i].x, y: this.nodes[i].y});
+        let n2 = {};
+        let n = this.nodes[i];
+        if(n.via){
+          n2 = {
+            x: n.x,
+            y:  n.y,
+            type: 5,
+            connNode:  {
+              x: n.via.x,
+              y: n.via.y
+            }
+          };
+        }else{
+          n2 = {
+            x: n.x,
+            y:  n.y,
+            type: 5,
+            connNode:  {
+              x: n.x,
+              y: n.y
+            }
+          };
+        }
+        visArr.push(n2);
       }
     }
     return visArr;
