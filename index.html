@@ -28,6 +28,13 @@
         <h2>Source for this site: <a href="https://github.com/Snekw/MazeSolver">Github</a></h2>
     </div>
     <div class="controls">
+        <h2>Browser support</h2>
+        <label>Chrome v55+</label><br/>
+        <label>Firefox v52+</label><br/>
+        <label>Opera v43+</label><br/>
+        <label>Edge v15+</label><br/>
+        <label>Safari v10.1+</label><br/>
+        <label>Internet Explorer <b style="color:red;">NOT SUPPORTED</b></label><br/>
         <h3>Make sure to have more than 2 GB of free RAM if you want to use large images!</h3>
     </div>
     <div class="controls">
@@ -49,10 +56,13 @@
         <br/>
         <label for="scale">Render scale:</label>
         <input type="number" id="scale" value="20" onchange="setScale(this.value)"/>
+        <br/>
+        <label for="showOrigImage">Show original image:</label>
+        <input id="showOrigImage" type="checkbox" onchange="toggleShowImage()"/>
     </div>
     <div class="controls">
-        <img id="img" src="mazes/maze-10x10.png">
-        <br/>
+        <img id="img" src="mazes/maze-10x10.png" class="hide">
+        <br id="imgSep" class="hide"/>
         <label for="method">Method</label>
         <select id="method" title="Method">
         </select>
@@ -70,7 +80,7 @@
         <input id="animNodeFind" type="checkbox"/>
         <br/>
         <label for="animNodeLink">Node link</label>
-        <input id="animNodeLink" type="checkbox" />
+        <input id="animNodeLink" type="checkbox"/>
         <br/>
         <label for="animPathFind">Path finding</label>
         <input id="animPathFind" type="checkbox" checked/>

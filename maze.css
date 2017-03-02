@@ -23,3 +23,11 @@ html, body {
     text-decoration: none;
     color: #445aab;
 }
+
+.hide{
+    display: none;
+}
+
+.show{
+    display: inline;
+}

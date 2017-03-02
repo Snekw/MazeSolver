@@ -510,5 +510,17 @@ function _updateAvailbaleMethods() {
   }
 }
 
+function toggleShowImage() {
+  let img = document.getElementById('img');
+  let imgSep = document.getElementById('imgSep');
+  if(img.className == 'hide'){
+    imgSep.className = 'show';
+    img.className = 'show';
+  }else{
+    imgSep.className = 'hide';
+    img.className = 'hide';
+  }
+}
+
 _updateAvailbaleMethods();
 doMaze();
