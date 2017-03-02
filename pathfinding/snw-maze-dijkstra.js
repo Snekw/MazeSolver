@@ -61,6 +61,12 @@ class SnwDijkstra extends SnwPathFind {
           curMinDist = this.workSet[d].dDistance;
         }
       }
+      //Make sure that the current node has not been visited
+      if(this.workSet[i].visited){
+        //Remove current index from work set
+        this.workSet.splice(i, 1);
+        continue;
+      }
       if (this.workSet[i].type == SNW.maze.NodeType.END) {
         this.endFound = true;
         this.endNode = this.workSet[i];
