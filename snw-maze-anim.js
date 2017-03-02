@@ -80,3 +80,5 @@ async function _playAnim(animBuffer, speed) {
   }
   animInProgress = false;
 }
+
+setAnimSpeed(50);

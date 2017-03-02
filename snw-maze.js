@@ -340,6 +340,7 @@ class FoundPath {
   }
 }
 
+let startTime = 0;
 /**
  * Call the selected path finding method and render results
  */
@@ -357,8 +358,35 @@ function solve() {
   for (let i = 0; i < nodes.length; i++) {
     n.push(nodes[i]);
   }
-  let startTime = performance.now();
-  let pathRet = SNW.maze.pathFinding[method].solve(n);
+  startTime = performance.now();
+  if(SNW.maze.pathFinding[method].isAnimated){
+    let pathRet = SNW.maze.pathFinding[method].solve(n, renderSolved);
+  }else{
+    let pathRet = SNW.maze.pathFinding[method].solve(n);
+    renderSolved(pathRet);
+  }
+  // let endTime = performance.now();
+  //
+  // let path = pathRet.path;
+  // let visited = pathRet.visited;
+  // mazeAnimBuffer.push.apply(mazeAnimBuffer, pathRet.animBuffer);
+  //
+  // //Render the visited paths and found path
+  // for (let i = 0; i < visited.length; i++) {
+  //   SNW.maze.renderer.renderPath(visited[i].x, visited[i].y, visited[i].connNode.x, visited[i].connNode.y, 6);
+  // }
+  // for (let i = 0; i < path.length; i++) {
+  //   SNW.maze.renderer.renderPath(path[i].x, path[i].y, path[i].connNode.x, path[i].connNode.y, 5);
+  // }
+  //
+  // let t = endTime - startTime;
+  // let timeTaken = new Date();
+  // timeTaken.setTime(t);
+  // document.getElementById('pathTime').innerHTML = timeTaken.getMinutes() + 'm' + timeTaken.getSeconds() + 's' + timeTaken.getMilliseconds() + ' Raw: ' + t.toString();
+
+}
+
+function renderSolved(pathRet) {
   let endTime = performance.now();
 
   let path = pathRet.path;

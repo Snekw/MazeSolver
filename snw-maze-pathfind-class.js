@@ -15,7 +15,8 @@
 "use strict";
 
 class SnwPathFind {
-  constructor(name) {
+  constructor(name, isAnimated = false) {
+    this.isAnimated = isAnimated || false;
     this.name = name || 'default';
   }
 
