@@ -355,14 +355,21 @@ function solve() {
   let methodEl = document.getElementById('method');
   let method = methodEl[methodEl.selectedIndex].value;
   let n = [];
+  let startI = -1;
+  let endI = -1;
   for (let i = 0; i < nodes.length; i++) {
     n.push(nodes[i]);
+    if (nodes[i].type == SNW.maze.NodeType.START) {
+      startI = i;
+    } else if (nodes[i].type == SNW.maze.NodeType.END) {
+      endI = i;
+    }
   }
   startTime = performance.now();
-  if(SNW.maze.pathFinding[method].isAnimated){
-    let pathRet = SNW.maze.pathFinding[method].solve(n, renderSolved);
-  }else{
-    let pathRet = SNW.maze.pathFinding[method].solve(n);
+  if (SNW.maze.pathFinding[method].isAnimated) {
+    SNW.maze.pathFinding[method].solve(n, startI, endI, renderSolved);
+  } else {
+    let pathRet = SNW.maze.pathFinding[method].solve(n, startI, endI);
     renderSolved(pathRet);
   }
   // let endTime = performance.now();
@@ -541,10 +548,10 @@ function _updateAvailbaleMethods() {
 function toggleShowImage() {
   let img = document.getElementById('img');
   let imgSep = document.getElementById('imgSep');
-  if(img.className == 'hide'){
+  if (img.className == 'hide') {
     imgSep.className = 'show';
     img.className = 'show';
-  }else{
+  } else {
     imgSep.className = 'hide';
     img.className = 'hide';
   }

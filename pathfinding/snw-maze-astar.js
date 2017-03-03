@@ -17,7 +17,7 @@ window.SNW = window.SNW || {};
 SNW.maze = SNW.maze || {};
 SNW.maze.pathFinding = SNW.maze.pathFinding || {};
 
-class SnwDijkstra extends SnwPathFind {
+class SnwAstar extends SnwPathFind {
 
   init(startI, endI) {
     this.nodes = nodes;
@@ -26,7 +26,7 @@ class SnwDijkstra extends SnwPathFind {
     this.path = [];
     this.workSet = [];
     this.endFound = false;
-    this.endNode = null;
+    this.endNode = this.nodes[this.end];
     this.retArr = [];
     this.animBuff = [];
 
@@ -34,6 +34,14 @@ class SnwDijkstra extends SnwPathFind {
       this.nodes[i].visited = false;
       this.nodes[i].via = null;
       this.nodes[i].dDistance = Number.MAX_SAFE_INTEGER;
+
+      //Straight distance to end node
+      let d = -1;
+      let dx = Math.abs(this.nodes[i].x - this.endNode.x);
+      let dy = Math.abs(this.nodes[i].y - this.endNode.y);
+      d = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+
+      this.nodes[i].aDistance = d;
     }
 
     this.nodes[this.start].dDistance = 0;
@@ -43,21 +51,22 @@ class SnwDijkstra extends SnwPathFind {
   solve(nodes, startI, endI) {
     this.init(startI, endI);
 
-    this.dijkstra();
+    this.aStar();
 
     this._makeRetArr(this.endNode);
     return new FoundPath(this.retArr, this._findVisited(), this.animBuff);
   }
 
-  dijkstra() {
+  aStar() {
     while (this.workSet.length > 0 && !this.endFound) {
       let i = 0;
       let curMinDist = Number.MAX_SAFE_INTEGER;
       //Find the node with shortest path currently
       for (let d = 0; d < this.workSet.length; d++) {
-        if (this.workSet[d].dDistance < curMinDist) {
+        let dist = this.workSet[d].dDistance + this.workSet[d].aDistance;
+        if (dist < curMinDist) {
           i = d;
-          curMinDist = this.workSet[d].dDistance;
+          curMinDist = dist;
         }
       }
       //Make sure that the current node has not been visited
@@ -188,9 +197,9 @@ class SnwDijkstra extends SnwPathFind {
   }
 }
 
-class SnwDijkstraAnimated extends SnwDijkstra {
+class SnwAstarAnimated extends SnwAstar {
 
-  solve(nodes, startI, endI, cb) {
+  solve(nodes,startI, endI, cb) {
     this.init(startI, endI);
 
     this.dijkstra().then(() => {
@@ -241,9 +250,10 @@ class SnwDijkstraAnimated extends SnwDijkstra {
       let curMinDist = Number.MAX_SAFE_INTEGER;
       //Find the node with shortest path currently
       for (let d = 0; d < this.workSet.length; d++) {
-        if (this.workSet[d].dDistance < curMinDist) {
+        let dist = this.workSet[d].dDistance + this.workSet[d].aDistance;
+        if (dist < curMinDist) {
           i = d;
-          curMinDist = this.workSet[d].dDistance;
+          curMinDist = dist;
         }
       }
       //Make sure that the current node has not been visited
@@ -307,5 +317,5 @@ class SnwDijkstraAnimated extends SnwDijkstra {
   }
 }
 
-SNW.maze.pathFinding.dijkstra = new SnwDijkstra('Dijkstra');
-SNW.maze.pathFinding.dijkstraAnimated = new SnwDijkstraAnimated('Dijkstra - Animated', true);
+SNW.maze.pathFinding.aStar = new SnwAstar('A*');
+SNW.maze.pathFinding.aStarAnimated = new SnwAstarAnimated('A* - Animated', true);

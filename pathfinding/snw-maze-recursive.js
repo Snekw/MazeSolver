@@ -25,11 +25,13 @@ class SnwRecursive extends SnwPathFind {
   /**
    * Overrides the default solve function
    * @param solveNodes - Nodes the maze has
+   * @param startI - Start node index
+   * @param endI - End node index
    * @returns {FoundPath}
    */
-  solve(solveNodes) {
-    this.start = -1;
-    this.end = -1;
+  solve(solveNodes, startI, endI) {
+    this.start = startI;
+    this.end = endI;
     this.nodes = solveNodes;
     this.endFound = false;
     this.floodAnimBuff = [];
@@ -37,12 +39,6 @@ class SnwRecursive extends SnwPathFind {
     for (let i = 0; i < this.nodes.length; i++) {
       solveNodes[i].visited = false;
       solveNodes[i].pathToNode = {};
-      if (this.nodes[i].type == SNW.maze.NodeType.START) {
-        this.start = i;
-      }
-      if (this.nodes[i].type == SNW.maze.NodeType.END) {
-        this.end = i;
-      }
     }
 
     this._checkNodes(this.nodes[this.start]);
@@ -61,22 +57,22 @@ class SnwRecursive extends SnwPathFind {
    */
   _makeRetArr(n, arr) {
     let n2 = {};
-    if(n.pathToNode){
+    if (n.pathToNode) {
       n2 = {
         x: n.x,
-        y:  n.y,
+        y: n.y,
         type: 5,
-        connNode:  {
+        connNode: {
           x: n.pathToNode.x,
           y: n.pathToNode.y
         }
       };
-    }else{
+    } else {
       n2 = {
         x: n.x,
-        y:  n.y,
+        y: n.y,
         type: 5,
-        connNode:  {
+        connNode: {
           x: n.x,
           y: n.y
         }
@@ -102,22 +98,22 @@ class SnwRecursive extends SnwPathFind {
       if (this.nodes[i].visited === true) {
         let n2 = {};
         let n = this.nodes[i];
-        if(n.pathToNode){
+        if (n.pathToNode) {
           n2 = {
             x: n.x,
-            y:  n.y,
+            y: n.y,
             type: 5,
-            connNode:  {
+            connNode: {
               x: n.pathToNode.x,
               y: n.pathToNode.y
             }
           };
-        }else{
+        } else {
           n2 = {
             x: n.x,
-            y:  n.y,
+            y: n.y,
             type: 5,
-            connNode:  {
+            connNode: {
               x: n.x,
               y: n.y
             }
