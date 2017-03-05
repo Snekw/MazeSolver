@@ -17,7 +17,7 @@
 window.SNW = window.SNW || {};
 SNW.maze = SNW.maze || {};
 SNW.maze.anim = {
-  playAnim: _playAnim
+  playAnim: _playBufferedAnim
 };
 
 /**
@@ -41,13 +41,13 @@ function setAnimSpeed(speed) {
 
 let animInProgress = false;
 /**
- * Render the animation
+ * Render the buffered animation
  * @param animBuffer
  * @param speed
  * @returns {Promise}
  * @private
  */
-async function _playAnim(animBuffer, speed) {
+async function _playBufferedAnim(animBuffer, speed) {
   if (animInProgress) {
     return new Promise(resolve => (resolve()));
   }

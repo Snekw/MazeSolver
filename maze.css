@@ -12,6 +12,7 @@ html, body {
 
 .canvas-container{
     margin: 20px;
+    position: relative;
 }
 
 .source{
@@ -30,4 +31,11 @@ html, body {
 
 .show{
     display: inline;
+}
+
+canvas{
+    position: absolute;
+    background-color: black;
+    top: 0;
+    left: 0;
 }

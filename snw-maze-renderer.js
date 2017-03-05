@@ -25,7 +25,8 @@ SNW.maze.renderer = {
   getRenderBuffer: _getRenderBuffer,
   setRenderBuffer: _setRenderBuffer,
   renderBlock: _renderBlock,
-  renderPath: _renderPath
+  renderPath: _renderPath,
+  renderNodes: _renderNodes
 };
 
 
@@ -33,6 +34,7 @@ let rScale = 20;
 let rWidth = 1;
 let rHeight = 1;
 let rCanvas = null;
+let rCtx = null;
 
 let rBuffer = [[0, 1, 1, -1], [0, 2, 2, 0]];
 
@@ -40,20 +42,21 @@ let rBuffer = [[0, 1, 1, -1], [0, 2, 2, 0]];
  * The rendering process
  */
 function _render() {
+  let rStartTime = performance.now();
   if (rCanvas == null || rCanvas.tagName != 'CANVAS') {
     console.error('Snw-Maze-Renderer: Bad canvas!');
     return;
   }
 
-  let ctx = rCanvas.getContext('2d');
-  ctx.width = rCanvas.width;
-  ctx.height = rCanvas.height;
+  // for (let y = 0; y < rHeight; y++) {
+  //   for (let x = 0; x < rWidth; x++) {
+  //     if (rBuffer[y][x] != 0) {
+  //       _renderBlock(x, y, rBuffer[y][x]);
+  //     }
+  //   }
+  // }
 
-  for (let y = 0; y < rHeight; y++) {
-    for (let x = 0; x < rWidth; x++) {
-      _renderBlock(x, y, rBuffer[y][x]);
-    }
-  }
+  console.log('Render time: ' + (performance.now() - rStartTime).toString());
 }
 
 function _renderPath(x, y, ex, ey, style) {
@@ -62,25 +65,22 @@ function _renderPath(x, y, ex, ey, style) {
   let ay = y;
   let aay = ey;
   //Flip the x an ex so that we can fill left to right
-  if(ex < x){
+  if (ex < x) {
     ax = ex;
     aax = x;
   }
   //Flip the y an ey so that we can fill left to right
-  if(ey < y){
+  if (ey < y) {
     ay = ey;
     aay = y;
   }
   let dx = aax - ax;
   let dy = aay - ay;
-  let ctx = rCanvas.getContext('2d');
-  ctx.width = rCanvas.width;
-  ctx.height = rCanvas.height;
-  ctx.fillStyle = _getStyle(style);
+  rCtx.fillStyle = _getStyle(style);
   //Need to add 1 to the delta
   dx++;
   dy++;
-  ctx.fillRect(ax * rScale, ay * rScale, dx * rScale, dy * rScale);
+  rCtx.fillRect(ax * rScale, ay * rScale, dx * rScale, dy * rScale);
 }
 
 /**
@@ -91,11 +91,8 @@ function _renderPath(x, y, ex, ey, style) {
  * @private
  */
 function _renderBlock(x, y, style) {
-  let ctx = rCanvas.getContext('2d');
-  ctx.width = rCanvas.width;
-  ctx.height = rCanvas.height;
-  ctx.fillStyle = _getStyle(style);
-  ctx.fillRect(x * rScale, y * rScale, rScale, rScale);
+  rCtx.fillStyle = _getStyle(style);
+  rCtx.fillRect(x * rScale, y * rScale, rScale, rScale);
 }
 
 /**
@@ -192,7 +189,8 @@ function _setCanvasInfo() {
 
   rCanvas.width = rWidth * rScale;
   rCanvas.height = rHeight * rScale;
-  _render();
+  rCtx.width = rCanvas.width;
+  rCtx.height = rCanvas.height;
 }
 
 /**
@@ -204,6 +202,7 @@ function _setCanvasById(canvasId) {
   if (rCanvas == null) {
     console.error('SNW-Maze-Renderer: Failed to set canvas. Bad id.');
   }
+  rCtx = rCanvas.getContext('2d');
   _setCanvasInfo();
 }
 
@@ -223,4 +222,24 @@ function _setRenderBuffer(newBuffer) {
   if (newBuffer.length == rHeight && newBuffer[0].length == rWidth) {
     rBuffer = newBuffer;
   }
+}
+
+let rNi = false;
+function _renderNodes(nodes) {
+  // rNi shows whether we have rendered the node this pass or not
+  // Changes every render call
+  rNi = !rNi;
+  let rStartTime = performance.now();
+  for (let i = 0; i < nodes.length; i++) {
+    for (let key in nodes[i].connections) {
+      if (nodes[i].connections.hasOwnProperty(key)) {
+        if (nodes[i].connections[key] != null)
+          if (!nodes[i].connections[key].rendered != rNi) {
+            _renderPath(nodes[i].x, nodes[i].y, nodes[i].connections[key].x, nodes[i].connections[key].y, 1);
+          }
+      }
+    }
+    nodes[i].rendered = rNi;
+  }
+  console.log('Node render time: ' + (performance.now() - rStartTime).toString());
 }

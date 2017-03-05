@@ -116,6 +116,7 @@ class MazeNode {
       up: null,
       down: null
     };
+    this.rendered = false;
   }
 
   /**
@@ -396,6 +397,7 @@ function solve() {
 function renderSolved(pathRet) {
   let endTime = performance.now();
 
+  let renderStart = performance.now();
   let path = pathRet.path;
   let visited = pathRet.visited;
   mazeAnimBuffer.push.apply(mazeAnimBuffer, pathRet.animBuffer);
@@ -407,6 +409,9 @@ function renderSolved(pathRet) {
   for (let i = 0; i < path.length; i++) {
     SNW.maze.renderer.renderPath(path[i].x, path[i].y, path[i].connNode.x, path[i].connNode.y, 5);
   }
+
+  let rt = performance.now() - renderStart;
+  console.log('Visited + found path render time: ' + rt.toString());
 
   let t = endTime - startTime;
   let timeTaken = new Date();
@@ -481,19 +486,21 @@ function doMaze() {
 
 
   //The render buffer
-  let b = SNW.maze.renderer.getRenderBuffer();
+  // let b = SNW.maze.renderer.getRenderBuffer();
 
   //Draw the nodes and find the connections
   for (let i = 0; i < nodes.length; i++) {
-    b[nodes[i].y][nodes[i].x] = nodes[i].type;
+    // b[nodes[i].y][nodes[i].x] = nodes[i].type;
     nodes[i].findConnections();
   }
+
+  SNW.maze.renderer.renderNodes(nodes);
 
   let timeTaken = new Date();
   let t = performance.now() - genStartTime;
   timeTaken.setTime(t);
   //Render
-  SNW.maze.renderer.render();
+  // SNW.maze.renderer.render();
 
   genTime.innerHTML = timeTaken.getMinutes() + 'm' + timeTaken.getSeconds() + 's' + timeTaken.getMilliseconds() + ' Raw: ' + t.toString();
 }
@@ -512,6 +519,7 @@ function mazeClear() {
  */
 function setScale(scale) {
   SNW.maze.renderer.setRenderScale(scale);
+  SNW.maze.renderer.renderNodes(nodes);
 }
 
 /**
