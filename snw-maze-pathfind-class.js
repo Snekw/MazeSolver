@@ -18,10 +18,23 @@ class SnwPathFind {
   constructor(name, isAnimated = false) {
     this.isAnimated = isAnimated || false;
     this.name = name || 'default';
+    this.animationSpeed = 5;
   }
 
   solve(nodes) {
     console.error(this.name + ': SOLVE METHOD NOT SET!');
     return null;
+  }
+
+  setAnimSpeed(speed){
+    if(isNaN(speed)){
+      try {
+        this.animationSpeed = parseInt(speed);
+      }catch (e){
+        console.log(e);
+      }
+    }else{
+      this.animationSpeed = speed;
+    }
   }
 }

@@ -29,6 +29,8 @@ class SnwAstar extends SnwPathFind {
     this.endNode = this.nodes[this.end];
     this.retArr = [];
     this.animBuff = [];
+    this.animator = new SnwMazeAnimator();
+    this.animator.RealTimeAnimation = true;
 
     for (let i = 0; i < this.nodes.length; i++) {
       this.nodes[i].visited = false;
@@ -54,7 +56,7 @@ class SnwAstar extends SnwPathFind {
     this.aStar();
 
     this._makeRetArr(this.endNode);
-    return new FoundPath(this.retArr, this._findVisited(), this.animBuff);
+    return new FoundPath(this.retArr, this._findVisited(), this.animator);
   }
 
   aStar() {
@@ -103,6 +105,7 @@ class SnwAstar extends SnwPathFind {
             }
           };
         }
+        this.animator.pushToAnimBuffer(n);
         this.animBuff.push(n);
       }
 
@@ -151,6 +154,7 @@ class SnwAstar extends SnwPathFind {
     }
     this.retArr.push(n2);
     if (recordAnim && animFoundPath) {
+      // this.animator.pushToAnimBuffer(n2);
       this.animBuff.push(n2);
     }
     if (n.type != SNW.maze.NodeType.START) {
@@ -204,7 +208,7 @@ class SnwAstarAnimated extends SnwAstar {
 
     this.dijkstra().then(() => {
       this._makeRetArr(this.endNode).then(() => {
-        cb(new FoundPath(this.retArr, [], []));
+        cb(new FoundPath(this.retArr, [], this.animator));
       });
     });
   }
@@ -290,10 +294,8 @@ class SnwAstarAnimated extends SnwAstar {
             }
           };
         }
-        SNW.maze.renderer.renderPath(n.x, n.y, n.connNode.x, n.connNode.y, 6);
-        if (animationSpeed > 0)
-          await sleep(animationSpeed);
-        // this.animBuff.push(n);
+        this.animator.AnimationSpeed = this.animationSpeed;
+        await this.animator.pushToAnimBuffer(n);
       }
 
       for (let key in this.workSet[i].connections) {

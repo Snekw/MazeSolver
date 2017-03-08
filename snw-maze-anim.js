@@ -20,6 +20,131 @@ SNW.maze.anim = {
   playAnim: _playBufferedAnim
 };
 
+class SnwMazeAnimator {
+  constructor() {
+    this.animationSpeed = 1;
+    this.animBuffer = [];
+    this.isRTAnim = false;
+  }
+
+  set RealTimeAnimation(val) {
+    this.isRTAnim = val;
+  }
+
+  set AnimationSpeed(speed) {
+    if (!isNaN(speed)) {
+      speed = parseInt(speed);
+      this.animationSpeed = speed;
+    } else {
+      try {
+        this.animationSpeed = parseInt(speed);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }
+
+  async play() {
+    while (this.animBuffer.length > 0) {
+      this.playNextFrame();
+
+      if (this.animationSpeed > 0) {
+        let speed = this.animationSpeed;
+        if (speed > 10) {
+          let overTen = speed - 10;
+          for (let i = 0; i < overTen; i++) {
+            this.playNextFrame();
+          }
+          speed = 1;
+        } else {
+          speed = this._getSpeed(speed);
+        }
+        await sleep(speed);
+      }
+    }
+  }
+
+  _getSpeed(speed) {
+    switch (speed) {
+      case 1:
+        speed = 1000;
+        break;
+      case 2:
+        speed = 500;
+        break;
+      case 3:
+        speed = 250;
+        break;
+      case 4:
+        speed = 125;
+        break;
+      case 5:
+        speed = 50;
+        break;
+      case 6:
+        speed = 20;
+        break;
+      case 7:
+        speed = 10;
+        break;
+      case 8:
+        speed = 5;
+        break;
+      case 9:
+        speed = 2;
+        break;
+      case 10:
+        speed = 1;
+        break;
+      default:
+        speed = 1;
+        break;
+    }
+    return speed;
+  }
+
+  playNextFrame() {
+    let curFrame = this.animBuffer[0];
+    if (curFrame != null) {
+      SNW.maze.renderer.renderPath(curFrame.x, curFrame.y, curFrame.connNode.x, curFrame.connNode.y, curFrame.type);
+      this.animBuffer.splice(0, 1);
+    }
+  }
+
+  async playRtFrame() {
+    let speed = this.animationSpeed || 1;
+    if (this.animationSpeed > 10) {
+      let overTen = speed - 10;
+      if (this.animBuffer.length > overTen) {
+        while (this.animBuffer.length > 0) {
+          this.playNextFrame();
+        }
+        speed = 1;
+        await sleep(speed);
+      }
+    } else {
+      let curFrame = this.animBuffer[0];
+      SNW.maze.renderer.renderPath(curFrame.x, curFrame.y, curFrame.connNode.x, curFrame.connNode.y, curFrame.type);
+      this.animBuffer.splice(0, 1);
+      speed = this._getSpeed(speed);
+      await sleep(speed);
+    }
+  }
+
+  async pushToAnimBuffer(frame) {
+    if (frame != null) {
+      this.animBuffer.push(frame);
+      if (this.isRTAnim) {
+        await this.playRtFrame();
+      }
+    }
+  }
+
+  clearAnimBuffer() {
+    this.animBuffer = [];
+  }
+}
+
 /**
  * Blocking function to time the animation
  * @param ms
@@ -35,9 +160,9 @@ let animationSpeed = 0;
  * Set the animation speed
  * @param speed
  */
-function setAnimSpeed(speed) {
-  animationSpeed = speed;
-}
+// function setAnimSpeed(speed) {
+//   animationSpeed = speed;
+// }
 
 let animInProgress = false;
 /**
@@ -48,37 +173,37 @@ let animInProgress = false;
  * @private
  */
 async function _playBufferedAnim(animBuffer, speed) {
+  mazeAnimator.play();
   if (animInProgress) {
     return new Promise(resolve => (resolve()));
   }
-  setAnimSpeed(speed);
+  // setAnimSpeed(speed);
   animInProgress = true;
-
-  let rBuffer = SNW.maze.renderer.getRenderBuffer();
-
-  for (let y = 0; y < rBuffer.length; y++) {
-    for (let x = 0; x < rBuffer[y].length; x++) {
-      rBuffer[y][x] = mazeRenderData[y][x];
-    }
-  }
-
-  SNW.maze.renderer.render();
-
-  for (let i = 0; i < animBuffer.length; i++) {
-    if(stopAnimProgress){
-      stopAnimProgress = false;
-      break;
-    }
-    if (animBuffer[i].connNode) {
-      SNW.maze.renderer.renderPath(animBuffer[i].x, animBuffer[i].y, animBuffer[i].connNode.x, animBuffer[i].connNode.y, animBuffer[i].type);
-    } else {
-      SNW.maze.renderer.renderBlock(animBuffer[i].x, animBuffer[i].y, animBuffer[i].type);
-    }
-
-    //Delay the animation
-    await sleep(animationSpeed);
-  }
-  animInProgress = false;
+  // let rBuffer = SNW.maze.renderer.getRenderBuffer();
+  //
+  // for (let y = 0; y < rBuffer.length; y++) {
+  //   for (let x = 0; x < rBuffer[y].length; x++) {
+  //     rBuffer[y][x] = mazeRenderData[y][x];
+  //   }
+  // }
+  //
+  // SNW.maze.renderer.render();
+  //
+  // for (let i = 0; i < animBuffer.length; i++) {
+  //   if (stopAnimProgress) {
+  //     stopAnimProgress = false;
+  //     break;
+  //   }
+  //   if (animBuffer[i].connNode) {
+  //     SNW.maze.renderer.renderPath(animBuffer[i].x, animBuffer[i].y, animBuffer[i].connNode.x, animBuffer[i].connNode.y, animBuffer[i].type);
+  //   } else {
+  //     SNW.maze.renderer.renderBlock(animBuffer[i].x, animBuffer[i].y, animBuffer[i].type);
+  //   }
+  //
+  //   //Delay the animation
+  //   await sleep(animationSpeed);
+  // }
+  // animInProgress = false;
 }
 
-setAnimSpeed(50);
+// setAnimSpeed(50);

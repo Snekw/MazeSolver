@@ -28,6 +28,7 @@ let nodes = [];
 
 //Animation
 let mazeAnimBuffer = [];
+let mazeAnimator = null;
 let stopAnimProgress = false;
 let recordAnim = true;
 let animNodeFind = true;
@@ -400,7 +401,9 @@ function renderSolved(pathRet) {
   let renderStart = performance.now();
   let path = pathRet.path;
   let visited = pathRet.visited;
-  mazeAnimBuffer.push.apply(mazeAnimBuffer, pathRet.animBuffer);
+
+  mazeAnimator = pathRet.animBuffer;
+  // mazeAnimBuffer.push.apply(mazeAnimBuffer, pathRet.animBuffer);
 
   //Render the visited paths and found path
   for (let i = 0; i < visited.length; i++) {
@@ -534,7 +537,10 @@ function clearAnimBuffer() {
  */
 function startAnim() {
   let animSpeed = document.getElementById('animSpeed').value;
-  SNW.maze.anim.playAnim(mazeAnimBuffer, animSpeed);
+  // SNW.maze.anim.playAnim(mazeAnimBuffer, animSpeed);
+  mazeClear();
+  // mazeAnimator.AnimationSpeed = parseInt(animSpeed);
+  mazeAnimator.play();
 }
 
 function stopAnim() {
@@ -562,6 +568,22 @@ function toggleShowImage() {
   } else {
     imgSep.className = 'hide';
     img.className = 'hide';
+  }
+}
+
+function setAnimationSpeed(speed) {
+  if(isNaN(speed)){
+    try {
+      speed = parseInt(speed);
+    }catch (e){
+      console.log(e);
+      return;
+    }
+  }
+  for(let key in SNW.maze.pathFinding){
+    if(SNW.maze.pathFinding.hasOwnProperty(key)){
+      SNW.maze.pathFinding[key].setAnimSpeed(speed);
+    }
   }
 }
 
