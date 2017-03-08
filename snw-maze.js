@@ -126,7 +126,7 @@ class MazeNode {
     //Connections down
     if (this.connections.down == null) {
       let dy = 0;
-      for (let y = this.y + 1; y < mazeNodeIndexChart.length; y++) {
+      for (let y = this.y - 1; y > -1; y--) {
         dy++;
         if (recordAnim && animNodeLink) {
           _findNodeAnim(this.x, y);
@@ -151,7 +151,7 @@ class MazeNode {
     //Connections up
     if (this.connections.up == null) {
       let dy = 0;
-      for (let y = this.y - 1; y > -1; y--) {
+      for (let y = this.y + 1; y < mazeNodeIndexChart.length; y++) {
         dy++;
         if (recordAnim && animNodeLink) {
           _findNodeAnim(this.x, y);
@@ -175,7 +175,7 @@ class MazeNode {
     //Connections right
     if (this.connections.right == null) {
       let dx = 0;
-      for (let x = this.x + 1; x < mazeNodeIndexChart[this.y].length; x++) {
+      for (let x = this.x - 1; x > -1; x--) {
         dx++;
         if (recordAnim && animNodeLink) {
           _findNodeAnim(x, this.y);
@@ -199,7 +199,7 @@ class MazeNode {
     //Connections left
     if (this.connections.left == null) {
       let dx = 0;
-      for (let x = this.x - 1; x > -1; x--) {
+      for (let x = this.x + 1; x < mazeNodeIndexChart[this.y].length; x++) {
         dx++;
         if (recordAnim && animNodeLink) {
           _findNodeAnim(x, this.y);
