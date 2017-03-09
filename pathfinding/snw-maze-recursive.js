@@ -29,42 +29,43 @@ class SnwRecursive extends SnwPathFind {
    * @param endI - End node index
    * @returns {FoundPath}
    */
-  solve(solveNodes, startI, endI) {
+  init(solveNodes, startI, endI) {
     this.start = startI;
     this.end = endI;
     this.nodes = solveNodes;
     this.endFound = false;
-    this.floodAnimBuff = [];
+    this.endNode = null;
+    this.retArr = [];
+    this.RealTimeAnimation = this.RealTimeAnimation || false;
+    this.animator = new SnwMazeAnimator();
+    this.animator.RealTimeAnimation = this.RealTimeAnimation;
 
     for (let i = 0; i < this.nodes.length; i++) {
-      solveNodes[i].visited = false;
-      solveNodes[i].pathToNode = {};
+      this.nodes[i].visited = false;
+      this.nodes[i].via = {};
     }
-
-    this._checkNodes(this.nodes[this.start]);
-
-    let retArr = [];
-    let visited = this._findVisited();
-    this._makeRetArr(this.nodes[this.end], retArr);
-    return new FoundPath(retArr, visited, this.floodAnimBuff);
   }
 
-  /**
-   * Make the returned path array
-   * @param n - Current node
-   * @param arr - The return array
-   * @private
-   */
-  _makeRetArr(n, arr) {
+  solve(nodes, startI, endI, cb) {
+    this.init(nodes, startI, endI);
+
+    this._checkNodes(this.nodes[this.start]).then(() => {
+      this._makeRetArr(this.endNode).then(() => {
+        cb(new FoundPath(this.retArr, this._findVisited(), this.animator));
+      });
+    });
+  }
+
+  async _makeRetArr(n) {
     let n2 = {};
-    if (n.pathToNode) {
+    if (n.via) {
       n2 = {
         x: n.x,
         y: n.y,
         type: 5,
         connNode: {
-          x: n.pathToNode.x,
-          y: n.pathToNode.y
+          x: n.via.x,
+          y: n.via.y
         }
       };
     } else {
@@ -78,12 +79,12 @@ class SnwRecursive extends SnwPathFind {
         }
       };
     }
-    arr.push(n2);
+    this.retArr.push(n2);
     if (recordAnim && animFoundPath) {
-      this.floodAnimBuff.push(n2);
+      await this.animator.pushToAnimBuffer(n2);
     }
     if (n.type != SNW.maze.NodeType.START) {
-      this._makeRetArr(n.pathToNode, arr);
+      return this._makeRetArr(n.via);
     }
   }
 
@@ -98,14 +99,14 @@ class SnwRecursive extends SnwPathFind {
       if (this.nodes[i].visited === true) {
         let n2 = {};
         let n = this.nodes[i];
-        if (n.pathToNode) {
+        if (n.via) {
           n2 = {
             x: n.x,
             y: n.y,
             type: 5,
             connNode: {
-              x: n.pathToNode.x,
-              y: n.pathToNode.y
+              x: n.via.x,
+              y: n.via.y
             }
           };
         } else {
@@ -131,41 +132,59 @@ class SnwRecursive extends SnwPathFind {
    * @param lastNode - Last node
    * @private
    */
-  _checkNodes(node, lastNode) {
+  async _checkNodes(node, lastNode) {
     if (this.endFound) {
       return;
     }
     if (recordAnim && animPathFind) {
-      let n = {
-        x: node.x,
-        y: node.y,
-        type: 6,
-        connNode: lastNode
-      };
-      this.floodAnimBuff.push(n);
+      let n = {};
+      if(lastNode){
+        n = {
+          x: node.x,
+          y: node.y,
+          type: 6,
+          connNode: {
+            x: lastNode.x,
+            y: lastNode.y
+          }
+        };
+      }else{
+        n = {
+          x: node.x,
+          y: node.y,
+          type: 6,
+          connNode: {
+            x: node.x,
+            y: node.y
+          }
+        };
+      }
+      this.animator.AnimationSpeed = this.animationSpeed;
+      await this.animator.pushToAnimBuffer(n);
       lastNode = node;
     }
     node.visited = true;
     if (node.type == SNW.maze.NodeType.END) {
       this.endFound = true;
+      this.endNode = node;
       return;
     }
 
     if (node.connections.left != null && !node.connections.left.visited) {
-      node.connections.left.pathToNode = node;
-      this._checkNodes(node.connections.left, lastNode);
+      node.connections.left.via = node;
+      await this._checkNodes(node.connections.left, lastNode);
     }
     if (node.connections.right != null && !node.connections.right.visited) {
-      node.connections.right.pathToNode = node;
-      this._checkNodes(node.connections.right, lastNode);
+      node.connections.right.via = node;
+      await this._checkNodes(node.connections.right, lastNode);
     }
     if (node.connections.down != null && !node.connections.down.visited) {
-      node.connections.down.pathToNode = node;
-      this._checkNodes(node.connections.down, lastNode);
+      node.connections.down.via = node;
+      await this._checkNodes(node.connections.down, lastNode);
     }
     if (node.connections.up != null && !node.connections.up.visited) {
-      node.connections.up.pathToNode = node;
-      this._checkNodes(node.connections.up, lastNode);
+      node.connections.up.via = node;
+      await this._checkNodes(node.connections.up, lastNode);
     }
   }
 }

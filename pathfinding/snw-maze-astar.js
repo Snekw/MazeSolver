@@ -157,9 +157,6 @@ class SnwAstar extends SnwPathFind {
     this.retArr.push(n2);
     if (recordAnim && animFoundPath) {
       await this.animator.pushToAnimBuffer(n2);
-      // SNW.maze.renderer.renderPath(n2.x, n2.y, n2.connNode.x, n2.connNode.y, 5);
-      // if (animationSpeed > 0)
-      //   await sleep(animationSpeed);
     }
     if (n.type != SNW.maze.NodeType.START) {
       return this._makeRetArr(n.via);

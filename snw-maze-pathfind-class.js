@@ -15,8 +15,7 @@
 "use strict";
 
 class SnwPathFind {
-  constructor(name, isAnimated = false) {
-    this.isAnimated = isAnimated || false;
+  constructor(name) {
     this.name = name || 'default';
     this.animationSpeed = 5;
   }
@@ -26,14 +25,14 @@ class SnwPathFind {
     return null;
   }
 
-  setAnimSpeed(speed){
-    if(isNaN(speed)){
+  setAnimSpeed(speed) {
+    if (isNaN(speed)) {
       try {
         this.animationSpeed = parseInt(speed);
-      }catch (e){
+      } catch (e) {
         console.log(e);
       }
-    }else{
+    } else {
       this.animationSpeed = speed;
     }
   }
