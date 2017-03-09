@@ -39,6 +39,9 @@ let animFoundPath = true;
  * Load the img data to smaller array and draw the maze
  */
 function initMaze() {
+  mazeAnimator = null;
+  document.getElementById('playAnim').disabled = true;
+  document.getElementById('stopAnim').disabled = true;
   let img = document.getElementById('img');
 
   //Create temporary canvas that we use to extract image data
