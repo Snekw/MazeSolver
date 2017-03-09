@@ -27,7 +27,6 @@ let mazeNodeIndexChart = [];
 let nodes = [];
 
 //Animation
-let mazeAnimBuffer = [];
 let mazeAnimator = null;
 let stopAnimProgress = false;
 let recordAnim = true;
@@ -129,10 +128,6 @@ class MazeNode {
       let dy = 0;
       for (let y = this.y - 1; y > -1; y--) {
         dy++;
-        if (recordAnim && animNodeLink) {
-          _findNodeAnim(this.x, y);
-        }
-
         if (mazeRenderData[y][this.x] == 0) {
           break;
         }
@@ -154,9 +149,6 @@ class MazeNode {
       let dy = 0;
       for (let y = this.y + 1; y < mazeNodeIndexChart.length; y++) {
         dy++;
-        if (recordAnim && animNodeLink) {
-          _findNodeAnim(this.x, y);
-        }
         if (mazeRenderData[y][this.x] == 0) {
           break;
         }
@@ -178,9 +170,6 @@ class MazeNode {
       let dx = 0;
       for (let x = this.x - 1; x > -1; x--) {
         dx++;
-        if (recordAnim && animNodeLink) {
-          _findNodeAnim(x, this.y);
-        }
         if (mazeRenderData[this.y][x] == 0) {
           break;
         }
@@ -202,9 +191,6 @@ class MazeNode {
       let dx = 0;
       for (let x = this.x + 1; x < mazeNodeIndexChart[this.y].length; x++) {
         dx++;
-        if (recordAnim && animNodeLink) {
-          _findNodeAnim(x, this.y);
-        }
         if (mazeRenderData[this.y][x] == 0) {
           break;
         }
@@ -224,25 +210,6 @@ class MazeNode {
 }
 
 /**
- * findNode function animation recording
- * @param x
- * @param y
- * @private
- */
-function _findNodeAnim(x, y) {
-  if (recordAnim && animNodeLink) {
-    mazeAnimBuffer.push({x: x, y: y, type: 3});
-    let t = 1;
-    if (mazeRenderData[y][x] == 0) {
-      t = 0;
-    } else if (mazeNodeIndexChart[y][x] != -1) {
-      t = 2;
-    }
-    mazeAnimBuffer.push({x: x, y: y, type: t});
-  }
-}
-
-/**
  * Create the nodes
  */
 function createNodes() {
@@ -258,17 +225,9 @@ function createNodes() {
             down: 0
           };
           mazeNodeIndexChart[y][x] = nodes.length - 1;
-          //Animation
-          if (recordAnim && animNodeFind) {
-            mazeAnimBuffer.push(nodes[nodes.length - 1]);
-          }
         } else if (y == mazeRenderData.length - 1 || x == mazeRenderData[y].length - 1) {
           nodes.push(new MazeNode(x, y, SNW.maze.NodeType.END));
           mazeNodeIndexChart[y][x] = nodes.length - 1;
-          //Animation
-          if (recordAnim && animNodeFind) {
-            mazeAnimBuffer.push(nodes[nodes.length - 1]);
-          }
         } else {
           let left = false;
           let right = false;
@@ -290,39 +249,19 @@ function createNodes() {
           if ((left || right) && (up || down)) {
             nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
             mazeNodeIndexChart[y][x] = nodes.length - 1;
-            //Animation
-            if (recordAnim && animNodeFind) {
-              mazeAnimBuffer.push(nodes[nodes.length - 1]);
-            }
           } else {
             if (up && !down && !left && !right) {
               nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
               mazeNodeIndexChart[y][x] = nodes.length - 1;
-              //Animation
-              if (recordAnim && animNodeFind) {
-                mazeAnimBuffer.push(nodes[nodes.length - 1]);
-              }
             } else if (!up && down && !left && !right) {
               nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
               mazeNodeIndexChart[y][x] = nodes.length - 1;
-              //Animation
-              if (recordAnim && animNodeFind) {
-                mazeAnimBuffer.push(nodes[nodes.length - 1]);
-              }
             } else if (!up && !down && left && !right) {
               nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
               mazeNodeIndexChart[y][x] = nodes.length - 1;
-              //Animation
-              if (recordAnim && animNodeFind) {
-                mazeAnimBuffer.push(nodes[nodes.length - 1]);
-              }
             } else if (!up && !down && !left && right) {
               nodes.push(new MazeNode(x, y, SNW.maze.NodeType.NORMAL));
               mazeNodeIndexChart[y][x] = nodes.length - 1;
-              //Animation
-              if (recordAnim && animNodeFind) {
-                mazeAnimBuffer.push(nodes[nodes.length - 1]);
-              }
             }
           }
         }
@@ -349,10 +288,7 @@ let startTime = 0;
 function solve() {
   document.getElementById('playAnim').disabled = true;
   document.getElementById('stopAnim').disabled = true;
-  mazeAnimBuffer = [];
   recordAnim = document.getElementById('recordAnimation').checked;
-  animNodeFind = document.getElementById('animNodeFind').checked;
-  animNodeLink = document.getElementById('animNodeLink').checked;
   animPathFind = document.getElementById('animPathFind').checked;
   animFoundPath = document.getElementById('animFoundPath').checked;
 
@@ -395,7 +331,7 @@ function renderSolved(pathRet) {
   }
 
   let rt = performance.now() - renderStart;
-  console.log('Visited + found path render time: ' + rt.toString());
+  console.info('Visited + found path render time: ' + rt.toString());
 
   let t = endTime - startTime;
   let timeTaken = new Date();
@@ -450,11 +386,8 @@ function _loadImg(img) {
 function doMaze() {
   let genTime = document.getElementById('genTime');
   genTime.innerHTML = '';
-  mazeAnimBuffer = [];
 
   recordAnim = document.getElementById('recordAnimation').checked;
-  animNodeFind = document.getElementById('animNodeFind').checked;
-  animNodeLink = document.getElementById('animNodeLink').checked;
   animPathFind = document.getElementById('animPathFind').checked;
   animFoundPath = document.getElementById('animFoundPath').checked;
 
@@ -576,8 +509,6 @@ function setAnimationSpeed(speed) {
 function updateAnimCheckBoxes() {
   let tggl = !document.getElementById('recordAnimation').checked;
   document.getElementById('rtAnim').disabled = tggl;
-  document.getElementById('animNodeFind').disabled = tggl;
-  document.getElementById('animNodeLink').disabled = tggl;
   document.getElementById('animPathFind').disabled = tggl;
   document.getElementById('animFoundPath').disabled = tggl;
   document.getElementById('animSpeed').disabled = tggl;

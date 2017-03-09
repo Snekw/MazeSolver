@@ -36,6 +36,7 @@ class SnwRecursive extends SnwPathFind {
     this.endFound = false;
     this.endNode = null;
     this.retArr = [];
+    this.animator = new SnwMazeAnimator();
     this.animator.RealTimeAnimation = this.RealTimeAnimation;
 
     for (let i = 0; i < this.nodes.length; i++) {

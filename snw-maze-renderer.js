@@ -48,15 +48,7 @@ function _render() {
     return;
   }
 
-  // for (let y = 0; y < rHeight; y++) {
-  //   for (let x = 0; x < rWidth; x++) {
-  //     if (rBuffer[y][x] != 0) {
-  //       _renderBlock(x, y, rBuffer[y][x]);
-  //     }
-  //   }
-  // }
-
-  console.log('Render time: ' + (performance.now() - rStartTime).toString());
+  console.info('Render time: ' + (performance.now() - rStartTime).toString());
 }
 
 function _renderPath(x, y, ex, ey, style) {
@@ -241,5 +233,5 @@ function _renderNodes(nodes) {
     }
     nodes[i].rendered = rNi;
   }
-  console.log('Node render time: ' + (performance.now() - rStartTime).toString());
+  console.info('Node render time: ' + (performance.now() - rStartTime).toString());
 }
