@@ -39,4 +39,78 @@ class SnwPathFind {
       this.animationSpeed = speed;
     }
   }
+
+  /**
+   * Make the return node array
+   * @param n - The end node
+   * @returns {Promise}
+   */
+  async makeRetArr(n) {
+    let n2 = {};
+    if (n.via) {
+      n2 = {
+        x: n.x,
+        y: n.y,
+        type: 5,
+        connNode: {
+          x: n.via.x,
+          y: n.via.y
+        }
+      };
+    } else {
+      n2 = {
+        x: n.x,
+        y: n.y,
+        type: 5,
+        connNode: {
+          x: n.x,
+          y: n.y
+        }
+      };
+    }
+    this.retArr.push(n2);
+    if (recordAnim && animFoundPath) {
+      await this.animator.pushToAnimBuffer(n2);
+    }
+    if (n.type != SNW.maze.NodeType.START) {
+      return this.makeRetArr(n.via);
+    }
+  }
+
+  /**
+   * Find visited nodes
+   * @returns {Array}
+   */
+  findVisited() {
+    let visArr = [];
+    for (let i = 0; i < this.nodes.length; i++) {
+      if (this.nodes[i].visited === true) {
+        let n2 = {};
+        let n = this.nodes[i];
+        if (n.via) {
+          n2 = {
+            x: n.x,
+            y: n.y,
+            type: 5,
+            connNode: {
+              x: n.via.x,
+              y: n.via.y
+            }
+          };
+        } else {
+          n2 = {
+            x: n.x,
+            y: n.y,
+            type: 5,
+            connNode: {
+              x: n.x,
+              y: n.y
+            }
+          };
+        }
+        visArr.push(n2);
+      }
+    }
+    return visArr;
+  }
 }

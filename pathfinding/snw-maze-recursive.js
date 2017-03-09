@@ -48,80 +48,10 @@ class SnwRecursive extends SnwPathFind {
     this.init(nodes, startI, endI);
 
     this._checkNodes(this.nodes[this.start]).then(() => {
-      this._makeRetArr(this.endNode).then(() => {
-        cb(new FoundPath(this.retArr, this._findVisited(), this.animator));
+      this.makeRetArr(this.endNode).then(() => {
+        cb(new FoundPath(this.retArr, this.findVisited(), this.animator));
       });
     });
-  }
-
-  async _makeRetArr(n) {
-    let n2 = {};
-    if (n.via) {
-      n2 = {
-        x: n.x,
-        y: n.y,
-        type: 5,
-        connNode: {
-          x: n.via.x,
-          y: n.via.y
-        }
-      };
-    } else {
-      n2 = {
-        x: n.x,
-        y: n.y,
-        type: 5,
-        connNode: {
-          x: n.x,
-          y: n.y
-        }
-      };
-    }
-    this.retArr.push(n2);
-    if (recordAnim && animFoundPath) {
-      await this.animator.pushToAnimBuffer(n2);
-    }
-    if (n.type != SNW.maze.NodeType.START) {
-      return this._makeRetArr(n.via);
-    }
-  }
-
-  /**
-   * Find visited nodes
-   * @returns {Array}
-   * @private
-   */
-  _findVisited() {
-    let visArr = [];
-    for (let i = 0; i < this.nodes.length; i++) {
-      if (this.nodes[i].visited === true) {
-        let n2 = {};
-        let n = this.nodes[i];
-        if (n.via) {
-          n2 = {
-            x: n.x,
-            y: n.y,
-            type: 5,
-            connNode: {
-              x: n.via.x,
-              y: n.via.y
-            }
-          };
-        } else {
-          n2 = {
-            x: n.x,
-            y: n.y,
-            type: 5,
-            connNode: {
-              x: n.x,
-              y: n.y
-            }
-          };
-        }
-        visArr.push(n2);
-      }
-    }
-    return visArr;
   }
 
   /**
