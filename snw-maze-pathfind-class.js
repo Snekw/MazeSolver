@@ -18,6 +18,9 @@ class SnwPathFind {
   constructor(name) {
     this.name = name || 'default';
     this.animationSpeed = 5;
+    this.RealTimeAnimation = this.RealTimeAnimation || false;
+    this.animator = new SnwMazeAnimator();
+    this.animator.RealTimeAnimation = this.RealTimeAnimation;
   }
 
   solve(nodes) {

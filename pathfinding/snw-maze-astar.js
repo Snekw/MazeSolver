@@ -28,8 +28,6 @@ class SnwAstar extends SnwPathFind {
     this.endFound = false;
     this.endNode = this.nodes[this.end];
     this.retArr = [];
-    this.RealTimeAnimation = this.RealTimeAnimation || false;
-    this.animator = new SnwMazeAnimator();
     this.animator.RealTimeAnimation = this.RealTimeAnimation;
 
     for (let i = 0; i < this.nodes.length; i++) {
