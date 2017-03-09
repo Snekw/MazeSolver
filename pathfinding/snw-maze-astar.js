@@ -29,8 +29,9 @@ class SnwAstar extends SnwPathFind {
     this.endNode = this.nodes[this.end];
     this.retArr = [];
     this.animBuff = [];
+    this.RealTimeAnimation = this.RealTimeAnimation || false;
     this.animator = new SnwMazeAnimator();
-    this.animator.RealTimeAnimation = true;
+    this.animator.RealTimeAnimation = this.RealTimeAnimation;
 
     for (let i = 0; i < this.nodes.length; i++) {
       this.nodes[i].visited = false;
@@ -50,205 +51,17 @@ class SnwAstar extends SnwPathFind {
     this.workSet.push(this.nodes[this.start]);
   }
 
-  solve(nodes, startI, endI) {
+  solve(nodes, startI, endI, cb) {
     this.init(startI, endI);
 
-    this.aStar();
-
-    this._makeRetArr(this.endNode);
-    return new FoundPath(this.retArr, this._findVisited(), this.animator);
-  }
-
-  aStar() {
-    while (this.workSet.length > 0 && !this.endFound) {
-      let i = 0;
-      let curMinDist = Number.MAX_SAFE_INTEGER;
-      //Find the node with shortest path currently
-      for (let d = 0; d < this.workSet.length; d++) {
-        let dist = this.workSet[d].dDistance + this.workSet[d].aDistance;
-        if (dist < curMinDist) {
-          i = d;
-          curMinDist = dist;
-        }
-      }
-      //Make sure that the current node has not been visited
-      if (this.workSet[i].visited) {
-        //Remove current index from work set
-        this.workSet.splice(i, 1);
-        continue;
-      }
-      if (this.workSet[i].type == SNW.maze.NodeType.END) {
-        this.endFound = true;
-        this.endNode = this.workSet[i];
-        break;
-      }
-      if (recordAnim && animPathFind) {
-        let n = {};
-        if (this.workSet[i].via) {
-          n = {
-            x: this.workSet[i].x,
-            y: this.workSet[i].y,
-            type: 6,
-            connNode: {
-              x: this.workSet[i].via.x,
-              y: this.workSet[i].via.y
-            }
-          };
-        } else {
-          n = {
-            x: this.workSet[i].x,
-            y: this.workSet[i].y,
-            type: 6,
-            connNode: {
-              x: this.workSet[i].x,
-              y: this.workSet[i].y
-            }
-          };
-        }
-        this.animator.pushToAnimBuffer(n);
-        this.animBuff.push(n);
-      }
-
-      for (let key in this.workSet[i].connections) {
-        if (this.workSet[i].connections.hasOwnProperty(key)) {
-          if (this.workSet[i].connections[key] != null) {
-            if (this.workSet[i].dDistance + this.workSet[i].connections[key].distance[key] < this.workSet[i].connections[key].dDistance) {
-              this.workSet[i].connections[key].dDistance = this.workSet[i].dDistance + this.workSet[i].connections[key].distance[key];
-              this.workSet[i].connections[key].via = this.workSet[i];
-            }
-            //Push the node to work set
-            if (!this.workSet[i].connections[key].visited) {
-              this.workSet.push(this.workSet[i].connections[key]);
-            }
-          }
-        }
-      }
-      this.workSet[i].visited = true;
-      //Remove current index from work set
-      this.workSet.splice(i, 1);
-    }
-  }
-
-  _makeRetArr(n) {
-    let n2 = {};
-    if (n.via) {
-      n2 = {
-        x: n.x,
-        y: n.y,
-        type: 5,
-        connNode: {
-          x: n.via.x,
-          y: n.via.y
-        }
-      };
-    } else {
-      n2 = {
-        x: n.x,
-        y: n.y,
-        type: 5,
-        connNode: {
-          x: n.x,
-          y: n.y
-        }
-      };
-    }
-    this.retArr.push(n2);
-    if (recordAnim && animFoundPath) {
-      // this.animator.pushToAnimBuffer(n2);
-      this.animBuff.push(n2);
-    }
-    if (n.type != SNW.maze.NodeType.START) {
-      this._makeRetArr(n.via);
-    }
-  }
-
-  /**
-   * Find visited nodes
-   * @returns {Array}
-   * @private
-   */
-  _findVisited() {
-    let visArr = [];
-    for (let i = 0; i < this.nodes.length; i++) {
-      if (this.nodes[i].visited === true) {
-        let n2 = {};
-        let n = this.nodes[i];
-        if (n.via) {
-          n2 = {
-            x: n.x,
-            y: n.y,
-            type: 5,
-            connNode: {
-              x: n.via.x,
-              y: n.via.y
-            }
-          };
-        } else {
-          n2 = {
-            x: n.x,
-            y: n.y,
-            type: 5,
-            connNode: {
-              x: n.x,
-              y: n.y
-            }
-          };
-        }
-        visArr.push(n2);
-      }
-    }
-    return visArr;
-  }
-}
-
-class SnwAstarAnimated extends SnwAstar {
-
-  solve(nodes,startI, endI, cb) {
-    this.init(startI, endI);
-
-    this.dijkstra().then(() => {
+    this.astar().then(() => {
       this._makeRetArr(this.endNode).then(() => {
-        cb(new FoundPath(this.retArr, [], this.animator));
+        cb(new FoundPath(this.retArr, this._findVisited(), this.animator));
       });
     });
   }
 
-  async _makeRetArr(n) {
-    let n2 = {};
-    if (n.via) {
-      n2 = {
-        x: n.x,
-        y: n.y,
-        type: 5,
-        connNode: {
-          x: n.via.x,
-          y: n.via.y
-        }
-      };
-    } else {
-      n2 = {
-        x: n.x,
-        y: n.y,
-        type: 5,
-        connNode: {
-          x: n.x,
-          y: n.y
-        }
-      };
-    }
-    this.retArr.push(n2);
-    if (recordAnim && animFoundPath) {
-      SNW.maze.renderer.renderPath(n2.x, n2.y, n2.connNode.x, n2.connNode.y, 5);
-      if (animationSpeed > 0)
-        await sleep(animationSpeed);
-    }
-    if (n.type != SNW.maze.NodeType.START) {
-      return this._makeRetArr(n.via);
-    }
-
-  }
-
-  async dijkstra() {
+  async astar() {
     while (this.workSet.length > 0 && !this.endFound) {
       let i = 0;
       let curMinDist = Number.MAX_SAFE_INTEGER;
@@ -317,7 +130,80 @@ class SnwAstarAnimated extends SnwAstar {
       this.workSet.splice(i, 1);
     }
   }
+
+
+  async _makeRetArr(n) {
+    let n2 = {};
+    if (n.via) {
+      n2 = {
+        x: n.x,
+        y: n.y,
+        type: 5,
+        connNode: {
+          x: n.via.x,
+          y: n.via.y
+        }
+      };
+    } else {
+      n2 = {
+        x: n.x,
+        y: n.y,
+        type: 5,
+        connNode: {
+          x: n.x,
+          y: n.y
+        }
+      };
+    }
+    this.retArr.push(n2);
+    if (recordAnim && animFoundPath) {
+      await this.animator.pushToAnimBuffer(n2);
+      // SNW.maze.renderer.renderPath(n2.x, n2.y, n2.connNode.x, n2.connNode.y, 5);
+      // if (animationSpeed > 0)
+      //   await sleep(animationSpeed);
+    }
+    if (n.type != SNW.maze.NodeType.START) {
+      return this._makeRetArr(n.via);
+    }
+  }
+
+  /**
+   * Find visited nodes
+   * @returns {Array}
+   * @private
+   */
+  _findVisited() {
+    let visArr = [];
+    for (let i = 0; i < this.nodes.length; i++) {
+      if (this.nodes[i].visited === true) {
+        let n2 = {};
+        let n = this.nodes[i];
+        if (n.via) {
+          n2 = {
+            x: n.x,
+            y: n.y,
+            type: 5,
+            connNode: {
+              x: n.via.x,
+              y: n.via.y
+            }
+          };
+        } else {
+          n2 = {
+            x: n.x,
+            y: n.y,
+            type: 5,
+            connNode: {
+              x: n.x,
+              y: n.y
+            }
+          };
+        }
+        visArr.push(n2);
+      }
+    }
+    return visArr;
+  }
 }
 
 SNW.maze.pathFinding.aStar = new SnwAstar('A*');
-SNW.maze.pathFinding.aStarAnimated = new SnwAstarAnimated('A* - Animated', true);

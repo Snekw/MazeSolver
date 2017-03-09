@@ -13,18 +13,12 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 "use strict";
-
-window.SNW = window.SNW || {};
-SNW.maze = SNW.maze || {};
-SNW.maze.anim = {
-  playAnim: _playBufferedAnim
-};
-
 class SnwMazeAnimator {
   constructor() {
     this.animationSpeed = 1;
     this.animBuffer = [];
     this.isRTAnim = false;
+    this.shouldStop = false;
   }
 
   set RealTimeAnimation(val) {
@@ -45,7 +39,8 @@ class SnwMazeAnimator {
   }
 
   async play() {
-    while (this.animBuffer.length > 0) {
+    this.shouldStop = false;
+    while (this.animBuffer.length > 0 && !this.shouldStop) {
       this.playNextFrame();
 
       if (this.animationSpeed > 0) {
@@ -57,14 +52,18 @@ class SnwMazeAnimator {
           }
           speed = 1;
         } else {
-          speed = this._getSpeed(speed);
+          speed = SnwMazeAnimator._getSpeed(speed);
         }
-        await sleep(speed);
+        await SnwMazeAnimator.sleep(speed);
       }
     }
   }
 
-  _getSpeed(speed) {
+  stopAnimation() {
+    this.shouldStop = true;
+  }
+
+  static _getSpeed(speed) {
     switch (speed) {
       case 1:
         speed = 1000;
@@ -120,14 +119,14 @@ class SnwMazeAnimator {
           this.playNextFrame();
         }
         speed = 1;
-        await sleep(speed);
+        await SnwMazeAnimator.sleep(speed);
       }
     } else {
       let curFrame = this.animBuffer[0];
       SNW.maze.renderer.renderPath(curFrame.x, curFrame.y, curFrame.connNode.x, curFrame.connNode.y, curFrame.type);
       this.animBuffer.splice(0, 1);
-      speed = this._getSpeed(speed);
-      await sleep(speed);
+      speed = SnwMazeAnimator._getSpeed(speed);
+      await SnwMazeAnimator.sleep(speed);
     }
   }
 
@@ -143,67 +142,13 @@ class SnwMazeAnimator {
   clearAnimBuffer() {
     this.animBuffer = [];
   }
-}
 
-/**
- * Blocking function to time the animation
- * @param ms
- * @returns {Promise}
- */
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-let animationSpeed = 0;
-
-/**
- * Set the animation speed
- * @param speed
- */
-// function setAnimSpeed(speed) {
-//   animationSpeed = speed;
-// }
-
-let animInProgress = false;
-/**
- * Render the buffered animation
- * @param animBuffer
- * @param speed
- * @returns {Promise}
- * @private
- */
-async function _playBufferedAnim(animBuffer, speed) {
-  mazeAnimator.play();
-  if (animInProgress) {
-    return new Promise(resolve => (resolve()));
+  /**
+   * Blocking function to time the animation
+   * @param ms
+   * @returns {Promise}
+   */
+  static sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
-  // setAnimSpeed(speed);
-  animInProgress = true;
-  // let rBuffer = SNW.maze.renderer.getRenderBuffer();
-  //
-  // for (let y = 0; y < rBuffer.length; y++) {
-  //   for (let x = 0; x < rBuffer[y].length; x++) {
-  //     rBuffer[y][x] = mazeRenderData[y][x];
-  //   }
-  // }
-  //
-  // SNW.maze.renderer.render();
-  //
-  // for (let i = 0; i < animBuffer.length; i++) {
-  //   if (stopAnimProgress) {
-  //     stopAnimProgress = false;
-  //     break;
-  //   }
-  //   if (animBuffer[i].connNode) {
-  //     SNW.maze.renderer.renderPath(animBuffer[i].x, animBuffer[i].y, animBuffer[i].connNode.x, animBuffer[i].connNode.y, animBuffer[i].type);
-  //   } else {
-  //     SNW.maze.renderer.renderBlock(animBuffer[i].x, animBuffer[i].y, animBuffer[i].type);
-  //   }
-  //
-  //   //Delay the animation
-  //   await sleep(animationSpeed);
-  // }
-  // animInProgress = false;
 }
-
-// setAnimSpeed(50);
