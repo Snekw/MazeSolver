@@ -347,6 +347,8 @@ let startTime = 0;
  * Call the selected path finding method and render results
  */
 function solve() {
+  document.getElementById('playAnim').disabled = true;
+  document.getElementById('stopAnim').disabled = true;
   mazeAnimBuffer = [];
   recordAnim = document.getElementById('recordAnimation').checked;
   animNodeFind = document.getElementById('animNodeFind').checked;
@@ -381,7 +383,8 @@ function renderSolved(pathRet) {
   let visited = pathRet.visited;
 
   mazeAnimator = pathRet.animator;
-  // mazeAnimBuffer.push.apply(mazeAnimBuffer, pathRet.animBuffer);
+
+  document.getElementById('playAnim').disabled = mazeAnimator.isRTAnim;
 
   //Render the visited paths and found path
   for (let i = 0; i < visited.length; i++) {
@@ -498,23 +501,24 @@ function setScale(scale) {
 }
 
 /**
- * Clear the animation buffer
- */
-function clearAnimBuffer() {
-  mazeAnimBuffer = [];
-}
-
-/**
  * Play the current animation buffer
  */
 function startAnim() {
   if (mazeAnimator == null)
     return;
 
+  document.getElementById('stopAnim').disabled = false;
   let animSpeed = document.getElementById('animSpeed').value;
   mazeClear();
   mazeAnimator.AnimationSpeed = animSpeed;
-  mazeAnimator.play();
+  let tempBuffer = [];
+  for(let i = 0; i < mazeAnimator.animBuffer.length; i++){
+    tempBuffer[i] = mazeAnimator.animBuffer[i];
+  }
+  mazeAnimator.play().then(()=>{
+    mazeAnimator.animBuffer = tempBuffer;
+    document.getElementById('stopAnim').disabled = true;
+  });
 }
 
 function stopAnim() {
@@ -523,6 +527,7 @@ function stopAnim() {
 
   mazeAnimator.stopAnimation();
   stopAnimProgress = true;
+  document.getElementById('stopAnim').disabled = true;
 }
 
 function _updateAvailbaleMethods() {
@@ -566,6 +571,16 @@ function setAnimationSpeed(speed) {
   if (mazeAnimator != null) {
     mazeAnimator.AnimationSpeed = speed;
   }
+}
+
+function updateAnimCheckBoxes() {
+  let tggl = !document.getElementById('recordAnimation').checked;
+  document.getElementById('rtAnim').disabled = tggl;
+  document.getElementById('animNodeFind').disabled = tggl;
+  document.getElementById('animNodeLink').disabled = tggl;
+  document.getElementById('animPathFind').disabled = tggl;
+  document.getElementById('animFoundPath').disabled = tggl;
+  document.getElementById('animSpeed').disabled = tggl;
 }
 
 _updateAvailbaleMethods();

@@ -69,12 +69,11 @@
         <button onclick="solve()">Solve</button>
         <button onclick="mazeClear()">Clear</button>
         <br/>
-        <button onclick="startAnim()">Play animation</button>
-        <button onclick="stopAnim()">Stop animation</button>
-        <button onclick="clearAnimBuffer()">Clear animation buffer</button>
+        <button id="playAnim" onclick="startAnim()" disabled>Play animation</button>
+        <button id="stopAnim" onclick="stopAnim()" disabled>Stop animation</button>
         <br/>
         <label for="recordAnimation">Record animation</label>
-        <input id="recordAnimation" type="checkbox" checked/>
+        <input id="recordAnimation" type="checkbox" checked onchange="updateAnimCheckBoxes()"/>
         <br/>
         <label for="rtAnim">Real time animation</label>
         <input id="rtAnim" type="checkbox" checked/>
