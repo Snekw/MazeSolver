@@ -51,6 +51,15 @@ function _render() {
   console.info('Render time: ' + (performance.now() - rStartTime).toString());
 }
 
+/**
+ * Render a path
+ * @param {Number} x - X coordinate
+ * @param {Number} y - Y coordinate
+ * @param {Number} ex - End X coordinate
+ * @param {Number} ey - End Y coodinate
+ * @param {Number} style - The render style
+ * @private
+ */
 function _renderPath(x, y, ex, ey, style) {
   let ax = x;
   let aax = ex;
@@ -217,6 +226,11 @@ function _setRenderBuffer(newBuffer) {
 }
 
 let rNi = false;
+/**
+ * Render nods from array
+ * @param {Array} nodes - Node array
+ * @private
+ */
 function _renderNodes(nodes) {
   // rNi shows whether we have rendered the node this pass or not
   // Changes every render call

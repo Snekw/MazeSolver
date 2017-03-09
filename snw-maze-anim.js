@@ -13,7 +13,13 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 "use strict";
+/**
+ * SnwMazeAnimator handles the animation needs for the path finding
+ */
 class SnwMazeAnimator {
+  /**
+   * Initialize
+   */
   constructor() {
     this.animationSpeed = 1;
     this.animBuffer = [];
@@ -21,10 +27,20 @@ class SnwMazeAnimator {
     this.shouldStop = false;
   }
 
+  /**
+   * Set the Real time animation
+   * @param {Boolean} val - True/False
+   * @constructor
+   */
   set RealTimeAnimation(val) {
     this.isRTAnim = val;
   }
 
+  /**
+   * Set the animation speed
+   * @param {Number} speed - Animation speed
+   * @constructor
+   */
   set AnimationSpeed(speed) {
     if (!isNaN(speed)) {
       speed = parseInt(speed);
@@ -38,6 +54,10 @@ class SnwMazeAnimator {
     }
   }
 
+  /**
+   * Play the animation from current buffer
+   * @returns {Promise.<void>}
+   */
   async play() {
     this.shouldStop = false;
     while (this.animBuffer.length > 0 && !this.shouldStop) {
@@ -59,10 +79,19 @@ class SnwMazeAnimator {
     }
   }
 
+  /**
+   * Stop the currently playing animation
+   */
   stopAnimation() {
     this.shouldStop = true;
   }
 
+  /**
+   * Get the delay(ms) for the speed
+   * @param {Number} speed - Animation speed 1-10
+   * @returns {Number} - Delay in ms
+   * @private
+   */
   static _getSpeed(speed) {
     switch (speed) {
       case 1:
@@ -102,6 +131,9 @@ class SnwMazeAnimator {
     return speed;
   }
 
+  /**
+   * Play the next frame from animation buffer
+   */
   playNextFrame() {
     let curFrame = this.animBuffer[0];
     if (curFrame != null) {
@@ -110,6 +142,10 @@ class SnwMazeAnimator {
     }
   }
 
+  /**
+   * Play next frame as real time frame
+   * @returns {Promise.<void>}
+   */
   async playRtFrame() {
     let speed = this.animationSpeed || 1;
     if (this.animationSpeed > 10) {
@@ -122,14 +158,17 @@ class SnwMazeAnimator {
         await SnwMazeAnimator.sleep(speed);
       }
     } else {
-      let curFrame = this.animBuffer[0];
-      SNW.maze.renderer.renderPath(curFrame.x, curFrame.y, curFrame.connNode.x, curFrame.connNode.y, curFrame.type);
-      this.animBuffer.splice(0, 1);
+      this.playNextFrame();
       speed = SnwMazeAnimator._getSpeed(speed);
       await SnwMazeAnimator.sleep(speed);
     }
   }
 
+  /**
+   * Push a frame to animation buffer and play it if we are using real time animation
+   * @param frame - The animation frame
+   * @returns {Promise.<void>}
+   */
   async pushToAnimBuffer(frame) {
     if (frame != null) {
       this.animBuffer.push(frame);
@@ -139,6 +178,9 @@ class SnwMazeAnimator {
     }
   }
 
+  /**
+   * Clear the animation buffer
+   */
   clearAnimBuffer() {
     this.animBuffer = [];
   }

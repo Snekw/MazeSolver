@@ -30,8 +30,6 @@ let nodes = [];
 let mazeAnimator = null;
 let stopAnimProgress = false;
 let recordAnim = true;
-let animNodeFind = true;
-let animNodeLink = true;
 let animPathFind = true;
 let animFoundPath = true;
 
@@ -277,6 +275,12 @@ function createNodes() {
  * Found path class
  */
 class FoundPath {
+  /**
+   * Initialize
+   * @param path - Path nodes array
+   * @param visited - Visited nodes array
+   * @param animator - The animator from the path finding method
+   */
   constructor(path, visited, animator) {
     this.path = path || [];
     this.visited = visited || [];
@@ -314,6 +318,10 @@ function solve() {
   SNW.maze.pathFinding[method].solve(n, startI, endI, renderSolved);
 }
 
+/**
+ * Render the solved maze
+ * @param {FoundPath} pathRet - The returned FoundPath object
+ */
 function renderSolved(pathRet) {
   let endTime = performance.now();
 
@@ -437,7 +445,7 @@ function setScale(scale) {
 }
 
 /**
- * Play the current animation buffer
+ * Play the current animation
  */
 function startAnim() {
   if (mazeAnimator == null)
@@ -457,6 +465,9 @@ function startAnim() {
   });
 }
 
+/**
+ * Stop the currently playing animation
+ */
 function stopAnim() {
   if (mazeAnimator == null)
     return;
@@ -466,7 +477,11 @@ function stopAnim() {
   document.getElementById('stopAnim').disabled = true;
 }
 
-function _updateAvailbaleMethods() {
+/**
+ * Update the method checkbox with available path finding methods
+ * @private
+ */
+function _updateAvailableMethods() {
   let methodBox = document.getElementById('method');
   for (let key in SNW.maze.pathFinding) {
     if (SNW.maze.pathFinding.hasOwnProperty(key)) {
@@ -478,6 +493,9 @@ function _updateAvailbaleMethods() {
   }
 }
 
+/**
+ * Toggle the visibility of the reference image
+ */
 function toggleShowImage() {
   let img = document.getElementById('img');
   let imgSep = document.getElementById('imgSep');
@@ -490,6 +508,10 @@ function toggleShowImage() {
   }
 }
 
+/**
+ * Set the animation speed
+ * @param {Number} speed - The animation speed
+ */
 function setAnimationSpeed(speed) {
   if (isNaN(speed)) {
     try {
@@ -509,6 +531,9 @@ function setAnimationSpeed(speed) {
   }
 }
 
+/**
+ * Update the animation controls
+ */
 function updateAnimCheckBoxes() {
   let tggl = !document.getElementById('recordAnimation').checked;
   document.getElementById('rtAnim').disabled = tggl;
@@ -517,5 +542,5 @@ function updateAnimCheckBoxes() {
   document.getElementById('animSpeed').disabled = tggl;
 }
 
-_updateAvailbaleMethods();
+_updateAvailableMethods();
 doMaze();

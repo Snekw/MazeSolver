@@ -14,18 +14,38 @@
  */
 "use strict";
 
+/**
+ * Base class for all path finding methods
+ */
 class SnwPathFind {
+  /**
+   * Initialize
+   * @param {String} name - Name of the path finding method
+   */
   constructor(name) {
     this.name = name || 'default';
     this.animationSpeed = 5;
     this.RealTimeAnimation = this.RealTimeAnimation || false;
   }
 
-  solve(nodes) {
+  /**
+   * The default solve method
+   * @param {Array} nodes - Node array
+   * @param {Number} startI - Start node index
+   * @param {Number} endI - End node index
+   * @param {Function} cb - Callback
+   * @abstract
+   * @returns {null}
+   */
+  solve(nodes, startI, endI, cb) {
     console.error(this.name + ': SOLVE METHOD NOT SET!');
     return null;
   }
 
+  /**
+   * Set the animation speed for the animator
+   * @param speed
+   */
   setAnimSpeed(speed) {
     if (isNaN(speed)) {
       try {

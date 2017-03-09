@@ -19,6 +19,11 @@ SNW.maze.pathFinding = SNW.maze.pathFinding || {};
 
 class SnwAstar extends SnwPathFind {
 
+  /**
+   * Initialize the path finding method
+   * @param {Number} startI - Start node index
+   * @param {Number} endI - End node index
+   */
   init(startI, endI) {
     this.nodes = nodes;
     this.start = startI;
@@ -49,6 +54,15 @@ class SnwAstar extends SnwPathFind {
     this.workSet.push(this.nodes[this.start]);
   }
 
+  /**
+   * The default solve method
+   * @param {Array} nodes - Node array
+   * @param {Number} startI - Start node index
+   * @param {Number} endI - End node index
+   * @param {Function} cb - Callback
+   * @abstract
+   * @returns {null}
+   */
   solve(nodes, startI, endI, cb) {
     this.init(startI, endI);
 
@@ -59,6 +73,10 @@ class SnwAstar extends SnwPathFind {
     });
   }
 
+  /**
+   * The implementation of A*
+   * @returns {Promise.<void>}
+   */
   async astar() {
     while (this.workSet.length > 0 && !this.endFound) {
       let i = 0;

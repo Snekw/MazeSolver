@@ -23,7 +23,7 @@ SNW.maze.pathFinding = SNW.maze.pathFinding || {};
  */
 class SnwRecursive extends SnwPathFind {
   /**
-   * Overrides the default solve function
+   * Initialize the path finding method
    * @param solveNodes - Nodes the maze has
    * @param startI - Start node index
    * @param endI - End node index
@@ -45,6 +45,15 @@ class SnwRecursive extends SnwPathFind {
     }
   }
 
+  /**
+   * The default solve method
+   * @param {Array} nodes - Node array
+   * @param {Number} startI - Start node index
+   * @param {Number} endI - End node index
+   * @param {Function} cb - Callback
+   * @abstract
+   * @returns {null}
+   */
   solve(nodes, startI, endI, cb) {
     this.init(nodes, startI, endI);
 
