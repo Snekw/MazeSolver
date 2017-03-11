@@ -15,7 +15,7 @@
 "use strict";
 
 
-SNW.maze.renderer.setRenderCanvasById('snw-maze-canvas');
+SNW.maze.renderer.setRenderCanvasById('snwMazeMainCanvas', 'snwMazeAnimCanvas');
 SNW.maze.renderer.setRenderSize(10, 10);
 SNW.maze.renderer.setRenderScale(20);
 
@@ -335,10 +335,10 @@ function renderSolved(pathRet) {
 
   //Render the visited paths and found path
   for (let i = 0; i < visited.length; i++) {
-    SNW.maze.renderer.renderPath(visited[i].x, visited[i].y, visited[i].connNode.x, visited[i].connNode.y, 6);
+    SNW.maze.renderer.renderPath(visited[i].x, visited[i].y, visited[i].connNode.x, visited[i].connNode.y, 6, 'snwMazeAnimCanvas');
   }
   for (let i = 0; i < path.length; i++) {
-    SNW.maze.renderer.renderPath(path[i].x, path[i].y, path[i].connNode.x, path[i].connNode.y, 5);
+    SNW.maze.renderer.renderPath(path[i].x, path[i].y, path[i].connNode.x, path[i].connNode.y, 5, 'snwMazeAnimCanvas');
   }
 
   let rt = performance.now() - renderStart;
@@ -418,7 +418,7 @@ function doMaze() {
   }
 
   //Render
-  SNW.maze.renderer.renderNodes(nodes);
+  SNW.maze.renderer.renderNodes(nodes, 'snwMazeMainCanvas');
 
   let timeTaken = new Date();
   let t = performance.now() - genStartTime;
@@ -432,7 +432,8 @@ function doMaze() {
  * -- Reloads the maze
  */
 function mazeClear() {
-  doMaze();
+  // doMaze();
+  SNW.maze.renderer.clearCanvas('snwMazeAnimCanvas');
 }
 
 /**
@@ -441,7 +442,7 @@ function mazeClear() {
  */
 function setScale(scale) {
   SNW.maze.renderer.setRenderScale(scale);
-  SNW.maze.renderer.renderNodes(nodes);
+  SNW.maze.renderer.renderNodes(nodes, 'snwMazeMainCanvas');
 }
 
 /**

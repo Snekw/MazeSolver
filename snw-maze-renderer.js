@@ -26,15 +26,16 @@ SNW.maze.renderer = {
   setRenderBuffer: _setRenderBuffer,
   renderBlock: _renderBlock,
   renderPath: _renderPath,
-  renderNodes: _renderNodes
+  renderNodes: _renderNodes,
+  clearCanvas: _clearCanvas
 };
 
 
 let rScale = 20;
 let rWidth = 1;
 let rHeight = 1;
-let rCanvas = null;
-let rCtx = null;
+let rCanvas = {};
+let rCtx = {};
 
 let rBuffer = [[0, 1, 1, -1], [0, 2, 2, 0]];
 
@@ -42,13 +43,13 @@ let rBuffer = [[0, 1, 1, -1], [0, 2, 2, 0]];
  * The rendering process
  */
 function _render() {
-  let rStartTime = performance.now();
-  if (rCanvas == null || rCanvas.tagName != 'CANVAS') {
-    console.error('Snw-Maze-Renderer: Bad canvas!');
-    return;
-  }
-
-  console.info('Render time: ' + (performance.now() - rStartTime).toString());
+  // let rStartTime = performance.now();
+  // if (rCanvas == null || rCanvas.tagName != 'CANVAS') {
+  //   console.error('Snw-Maze-Renderer: Bad canvas!');
+  //   return;
+  // }
+  //
+  // console.info('Render time: ' + (performance.now() - rStartTime).toString());
 }
 
 /**
@@ -60,7 +61,7 @@ function _render() {
  * @param {Number} style - The render style
  * @private
  */
-function _renderPath(x, y, ex, ey, style) {
+function _renderPath(x, y, ex, ey, style, canvas) {
   let ax = x;
   let aax = ex;
   let ay = y;
@@ -77,11 +78,11 @@ function _renderPath(x, y, ex, ey, style) {
   }
   let dx = aax - ax;
   let dy = aay - ay;
-  rCtx.fillStyle = _getStyle(style);
+  rCtx[canvas].fillStyle = _getStyle(style);
   //Need to add 1 to the delta
   dx++;
   dy++;
-  rCtx.fillRect(ax * rScale, ay * rScale, dx * rScale, dy * rScale);
+  rCtx[canvas].fillRect(ax * rScale, ay * rScale, dx * rScale, dy * rScale);
 }
 
 /**
@@ -91,9 +92,9 @@ function _renderPath(x, y, ex, ey, style) {
  * @param style
  * @private
  */
-function _renderBlock(x, y, style) {
-  rCtx.fillStyle = _getStyle(style);
-  rCtx.fillRect(x * rScale, y * rScale, rScale, rScale);
+function _renderBlock(x, y, style, canvas) {
+  rCtx[canvas].fillStyle = _getStyle(style);
+  rCtx[canvas].fillRect(x * rScale, y * rScale, rScale, rScale);
 }
 
 /**
@@ -184,26 +185,33 @@ function _setSize(width, height) {
  * @private
  */
 function _setCanvasInfo() {
-  if (rCanvas == null || rCanvas.tagName != 'CANVAS') {
-    return;
-  }
+  for (let canvas in rCanvas) {
+    if (!rCanvas.hasOwnProperty(canvas)) {
+      break;
+    }
+    if (rCanvas[canvas] == null || rCanvas[canvas].tagName != 'CANVAS') {
+      throw 'SnwRendered: BAD CANVAS!';
+    }
 
-  rCanvas.width = rWidth * rScale;
-  rCanvas.height = rHeight * rScale;
-  rCtx.width = rCanvas.width;
-  rCtx.height = rCanvas.height;
+    rCanvas[canvas].width = rWidth * rScale;
+    rCanvas[canvas].height = rHeight * rScale;
+    rCtx[canvas].width = rCanvas[canvas].width;
+    rCtx[canvas].height = rCanvas[canvas].height;
+  }
 }
 
 /**
  * Set the
- * @param canvasId
+ * @param canvasArr
  */
-function _setCanvasById(canvasId) {
-  rCanvas = document.getElementById(canvasId);
-  if (rCanvas == null) {
-    console.error('SNW-Maze-Renderer: Failed to set canvas. Bad id.');
+function _setCanvasById(...canvasArr) {
+  for (let i = 0; i < canvasArr.length; i++) {
+    rCanvas[canvasArr[i]] = document.getElementById(canvasArr[i]);
+    if (rCanvas[canvasArr[i]] == null) {
+      console.error('SNW-Maze-Renderer: Failed to set canvas. Bad id.');
+    }
+    rCtx[canvasArr[i]] = rCanvas[canvasArr[i]].getContext('2d');
   }
-  rCtx = rCanvas.getContext('2d');
   _setCanvasInfo();
 }
 
@@ -231,7 +239,7 @@ let rNi = false;
  * @param {Array} nodes - Node array
  * @private
  */
-function _renderNodes(nodes) {
+function _renderNodes(nodes, canvas) {
   // rNi shows whether we have rendered the node this pass or not
   // Changes every render call
   rNi = !rNi;
@@ -241,11 +249,17 @@ function _renderNodes(nodes) {
       if (nodes[i].connections.hasOwnProperty(key)) {
         if (nodes[i].connections[key] != null)
           if (!nodes[i].connections[key].rendered != rNi) {
-            _renderPath(nodes[i].x, nodes[i].y, nodes[i].connections[key].x, nodes[i].connections[key].y, 1);
+            _renderPath(nodes[i].x, nodes[i].y, nodes[i].connections[key].x, nodes[i].connections[key].y, 1, canvas);
           }
       }
     }
     nodes[i].rendered = rNi;
   }
   console.info('Node render time: ' + (performance.now() - rStartTime).toString());
+}
+
+function _clearCanvas(canvas) {
+  if (rCtx[canvas]) {
+    rCtx[canvas].clearRect(0, 0, rWidth * rScale, rHeight * rScale);
+  }
 }

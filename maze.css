@@ -40,3 +40,7 @@ canvas{
     left: 0;
     margin-bottom: 10px;
 }
+
+.bgTransparent{
+    background-color: transparent;
+}
