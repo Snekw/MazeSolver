@@ -59,6 +59,7 @@ function _render() {
  * @param {Number} ex - End X coordinate
  * @param {Number} ey - End Y coodinate
  * @param {Number} style - The render style
+ * @param {String} canvas - The canvas to render to
  * @private
  */
 function _renderPath(x, y, ex, ey, style, canvas) {
@@ -90,6 +91,7 @@ function _renderPath(x, y, ex, ey, style, canvas) {
  * @param x
  * @param y
  * @param style
+ * @param {String} canvas - The canvas to render to
  * @private
  */
 function _renderBlock(x, y, style, canvas) {
@@ -237,6 +239,7 @@ let rNi = false;
 /**
  * Render nods from array
  * @param {Array} nodes - Node array
+ * @param {String} canvas - The canvas to render to
  * @private
  */
 function _renderNodes(nodes, canvas) {
@@ -258,6 +261,11 @@ function _renderNodes(nodes, canvas) {
   console.info('Node render time: ' + (performance.now() - rStartTime).toString());
 }
 
+/**
+ * Clear a canvas
+ * @param {String} canvas - The canvas to clear
+ * @private
+ */
 function _clearCanvas(canvas) {
   if (rCtx[canvas]) {
     rCtx[canvas].clearRect(0, 0, rWidth * rScale, rHeight * rScale);
