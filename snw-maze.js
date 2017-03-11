@@ -79,6 +79,10 @@ function initMaze() {
   }
   mazeRenderData = temp2;
 
+  updateMazeNodeIndexChart();
+}
+
+function updateMazeNodeIndexChart() {
   let s = mazeRenderData.length;
   //Create a node index chart
   mazeNodeIndexChart = [];

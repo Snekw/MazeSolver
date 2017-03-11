@@ -56,7 +56,6 @@ function deleteCursor() {
 
 function mazeEditorClick(e) {
   let m = SnwMazeEditor.GetMousePosInside(e);
-  console.log(e);
   switch (e.which) {
     case 1:
       mazeRenderData[m.y][m.x] = 1;
@@ -65,6 +64,7 @@ function mazeEditorClick(e) {
       mazeRenderData[m.y][m.x] = 0;
   }
   nodes = [];
+  updateMazeNodeIndexChart();
   //Create the nodes
   createNodes();
 

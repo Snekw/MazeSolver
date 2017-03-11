@@ -71,7 +71,7 @@ class SnwMazeRenderer {
 
   /**
    * Render the nodes given in array
-   * @param {Array} nodes - The nodes to render
+   * @param {MazeNode[]} nodes - The nodes to render
    */
   renderNodes(nodes) {
     this.clear();
@@ -85,6 +85,21 @@ class SnwMazeRenderer {
       }
     }
     console.info('Node render time: ' + (performance.now() - rStartTime).toString());
+  }
+
+  /**
+   * Render the node locations
+   * @param {MazeNode[]} nodes - Node array
+   */
+  renderNodePositions(nodes) {
+    for (let i = 0; i < nodes.length; i++) {
+      for (let key in nodes[i].connections) {
+        if (nodes[i].connections.hasOwnProperty(key)) {
+          if (nodes[i].connections[key] != null)
+            this.renderPath(nodes[i].x, nodes[i].y, nodes[i].x, nodes[i].y, 2);
+        }
+      }
+    }
   }
 
   /**
