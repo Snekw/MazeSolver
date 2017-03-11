@@ -74,6 +74,7 @@ class SnwMazeRenderer {
    * @param {Array} nodes - The nodes to render
    */
   renderNodes(nodes) {
+    this.clear();
     let rStartTime = performance.now();
     for (let i = 0; i < nodes.length; i++) {
       for (let key in nodes[i].connections) {

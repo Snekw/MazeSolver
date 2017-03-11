@@ -18,7 +18,8 @@ class SnwMazeEditor {
     this.canvas = new SnwMazeRenderer('snwMazeCursorCanvas', 10, 10, 10);
     this.canvas.canvas.addEventListener('mousemove', updateCursor);
     this.canvas.canvas.addEventListener('mouseleave', deleteCursor);
-    this.canvas.canvas.addEventListener('click', mazeEditorClick);
+    this.canvas.canvas.addEventListener('mousedown', mazeEditorClick);
+    this.canvas.canvas.addEventListener('contextmenu', mazeContextMenu);
   }
 
   updateCanvasInfo(width, height, scale) {
@@ -55,7 +56,24 @@ function deleteCursor() {
 
 function mazeEditorClick(e) {
   let m = SnwMazeEditor.GetMousePosInside(e);
-  console.log(m);
+  console.log(e);
+  switch (e.which) {
+    case 1:
+      mazeRenderData[m.y][m.x] = 1;
+      break;
+    case 3:
+      mazeRenderData[m.y][m.x] = 0;
+  }
+  nodes = [];
+  //Create the nodes
+  createNodes();
+
+  //Find the connections
+  for (let i = 0; i < nodes.length; i++) {
+    nodes[i].findConnections();
+  }
+  mainCanvas.renderNodes(nodes);
+  animCanvas.clear();
 }
 
 function getMouseRelativePosition(e) {
@@ -63,4 +81,9 @@ function getMouseRelativePosition(e) {
     x: e.clientX - e.currentTarget.getBoundingClientRect().left,
     y: e.clientY - e.currentTarget.getBoundingClientRect().top
   }
+}
+
+function mazeContextMenu(e) {
+  e.preventDefault();
+  return false;
 }

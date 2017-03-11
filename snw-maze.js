@@ -386,45 +386,6 @@ function _loadImg(img) {
 }
 
 /**
- * Do all of the file reading to create the nodes
- * and render the maze
- */
-function doMaze() {
-  let genTime = document.getElementById('genTime');
-  genTime.innerHTML = '';
-
-  recordAnim = document.getElementById('recordAnimation').checked;
-  animPathFind = document.getElementById('animPathFind').checked;
-  animFoundPath = document.getElementById('animFoundPath').checked;
-
-  let genStartTime = performance.now();
-  nodes = [];
-  mazeRenderData = [];
-
-  //Create and draw the maze
-  initMaze();
-
-  //Create the nodes
-  createNodes();
-
-  //Draw the nodes and find the connections
-  for (let i = 0; i < nodes.length; i++) {
-    nodes[i].findConnections();
-  }
-
-  //Render
-  mainCanvas.renderNodes(nodes);
-  mazeEditor.updateCanvasInfo(mainCanvas.Width, mainCanvas.Height, mainCanvas.Scale);
-
-  let timeTaken = new Date();
-  let t = performance.now() - genStartTime;
-  timeTaken.setTime(t);
-
-
-  genTime.innerHTML = timeTaken.getMinutes() + 'm' + timeTaken.getSeconds() + 's' + timeTaken.getMilliseconds() + ' Raw: ' + t.toString();
-}
-
-/**
  * Remove the solved data from maze
  * -- Reloads the maze
  */
@@ -440,6 +401,7 @@ function setScale(scale) {
   mainCanvas.Scale = scale;
   animCanvas.Scale = scale;
   mainCanvas.renderNodes(nodes);
+  mazeEditor.updateCanvasInfo(mainCanvas.Width, mainCanvas.Height, mainCanvas.Scale);
 }
 
 /**
@@ -538,6 +500,45 @@ function updateAnimCheckBoxes() {
   document.getElementById('animPathFind').disabled = tggl;
   document.getElementById('animFoundPath').disabled = tggl;
   document.getElementById('animSpeed').disabled = tggl;
+}
+
+/**
+ * Do all of the file reading to create the nodes
+ * and render the maze
+ */
+function doMaze() {
+  let genTime = document.getElementById('genTime');
+  genTime.innerHTML = '';
+
+  recordAnim = document.getElementById('recordAnimation').checked;
+  animPathFind = document.getElementById('animPathFind').checked;
+  animFoundPath = document.getElementById('animFoundPath').checked;
+
+  let genStartTime = performance.now();
+  nodes = [];
+  mazeRenderData = [];
+
+  //Create and draw the maze
+  initMaze();
+
+  //Create the nodes
+  createNodes();
+
+  //Find the connections
+  for (let i = 0; i < nodes.length; i++) {
+    nodes[i].findConnections();
+  }
+
+  //Render the nodes
+  mainCanvas.renderNodes(nodes);
+  mazeEditor.updateCanvasInfo(mainCanvas.Width, mainCanvas.Height, mainCanvas.Scale);
+
+  let timeTaken = new Date();
+  let t = performance.now() - genStartTime;
+  timeTaken.setTime(t);
+
+
+  genTime.innerHTML = timeTaken.getMinutes() + 'm' + timeTaken.getSeconds() + 's' + timeTaken.getMilliseconds() + ' Raw: ' + t.toString();
 }
 
 _updateAvailableMethods();
