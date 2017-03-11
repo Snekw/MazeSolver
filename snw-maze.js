@@ -19,8 +19,6 @@ SNW.maze.renderer.setRenderCanvasById('snwMazeMainCanvas', 'snwMazeAnimCanvas');
 SNW.maze.renderer.setRenderSize(10, 10);
 SNW.maze.renderer.setRenderScale(20);
 
-SNW.maze.renderer.render();
-
 //Fields
 let mazeRenderData = [];
 let mazeNodeIndexChart = [];
@@ -293,6 +291,7 @@ let startTime = 0;
  * Call the selected path finding method and render results
  */
 function solve() {
+  SNW.maze.renderer.clearCanvas('snwMazeAnimCanvas');
   document.getElementById('playAnim').disabled = true;
   document.getElementById('stopAnim').disabled = true;
   recordAnim = document.getElementById('recordAnimation').checked;

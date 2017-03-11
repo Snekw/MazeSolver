@@ -18,7 +18,6 @@ window.SNW = window.SNW || {};
 SNW.maze = SNW.maze || {};
 
 SNW.maze.renderer = {
-  render: _render,
   setRenderScale: _setScale,
   setRenderSize: _setSize,
   setRenderCanvasById: _setCanvasById,
@@ -38,19 +37,6 @@ let rCanvas = {};
 let rCtx = {};
 
 let rBuffer = [[0, 1, 1, -1], [0, 2, 2, 0]];
-
-/**
- * The rendering process
- */
-function _render() {
-  // let rStartTime = performance.now();
-  // if (rCanvas == null || rCanvas.tagName != 'CANVAS') {
-  //   console.error('Snw-Maze-Renderer: Bad canvas!');
-  //   return;
-  // }
-  //
-  // console.info('Render time: ' + (performance.now() - rStartTime).toString());
-}
 
 /**
  * Render a path
