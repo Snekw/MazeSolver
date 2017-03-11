@@ -15,9 +15,7 @@
 "use strict";
 
 
-SNW.maze.renderer.setRenderCanvasById('snwMazeMainCanvas', 'snwMazeAnimCanvas');
-SNW.maze.renderer.setRenderSize(10, 10);
-SNW.maze.renderer.setRenderScale(20);
+let mainCanvas = new SnwMazeRenderer('snwMazeMainCanvas', 10, 10, 20);
 
 //Fields
 let mazeRenderData = [];
@@ -30,6 +28,7 @@ let stopAnimProgress = false;
 let recordAnim = true;
 let animPathFind = true;
 let animFoundPath = true;
+let animCanvas = new SnwMazeRenderer('snwMazeAnimCanvas', 10, 10, 20);
 
 /**
  * Load the img data to smaller array and draw the maze
@@ -62,26 +61,25 @@ function initMaze() {
   }
 
   //Update the renderer size
-  SNW.maze.renderer.setRenderSize(img.width, img.height);
-  //Update the render buffer
-  let b = SNW.maze.renderer.getRenderBuffer();
+  animCanvas.Height = img.height;
+  animCanvas.Width = img.width;
+  mainCanvas.Height = img.height;
+  mainCanvas.Width = img.width;
 
-  //Make 2d array representing the pixels
+  //Create a node data array
   let temp2 = [];
   for (let y = 0; y < img.height; y++) {
     let t = [];
     for (let x = 0; x < img.width; x++) {
       let s = temp[y * img.width + x];
       t.push(s);
-      //Update the buffer
-      b[y][x] = s;
     }
     temp2.push(t);
   }
   mazeRenderData = temp2;
 
   let s = mazeRenderData.length;
-
+  //Create a node index chart
   mazeNodeIndexChart = [];
   while (s--) {
     let s2 = mazeRenderData[s].length;
@@ -90,8 +88,6 @@ function initMaze() {
       mazeNodeIndexChart[s][s2] = -1;
     }
   }
-
-  SNW.maze.renderer.setRenderBuffer(b);
 }
 
 SNW.maze.NodeType = {
@@ -115,7 +111,6 @@ class MazeNode {
       up: null,
       down: null
     };
-    this.rendered = false;
   }
 
   /**
@@ -291,7 +286,7 @@ let startTime = 0;
  * Call the selected path finding method and render results
  */
 function solve() {
-  SNW.maze.renderer.clearCanvas('snwMazeAnimCanvas');
+  animCanvas.clear();
   document.getElementById('playAnim').disabled = true;
   document.getElementById('stopAnim').disabled = true;
   recordAnim = document.getElementById('recordAnimation').checked;
@@ -334,10 +329,10 @@ function renderSolved(pathRet) {
 
   //Render the visited paths and found path
   for (let i = 0; i < visited.length; i++) {
-    SNW.maze.renderer.renderPath(visited[i].x, visited[i].y, visited[i].connNode.x, visited[i].connNode.y, 6, 'snwMazeAnimCanvas');
+    animCanvas.renderPath(visited[i].x, visited[i].y, visited[i].connNode.x, visited[i].connNode.y, 6);
   }
   for (let i = 0; i < path.length; i++) {
-    SNW.maze.renderer.renderPath(path[i].x, path[i].y, path[i].connNode.x, path[i].connNode.y, 5, 'snwMazeAnimCanvas');
+    animCanvas.renderPath(path[i].x, path[i].y, path[i].connNode.x, path[i].connNode.y, 5);
   }
 
   let rt = performance.now() - renderStart;
@@ -417,7 +412,7 @@ function doMaze() {
   }
 
   //Render
-  SNW.maze.renderer.renderNodes(nodes, 'snwMazeMainCanvas');
+  mainCanvas.renderNodes(nodes);
 
   let timeTaken = new Date();
   let t = performance.now() - genStartTime;
@@ -431,8 +426,7 @@ function doMaze() {
  * -- Reloads the maze
  */
 function mazeClear() {
-  // doMaze();
-  SNW.maze.renderer.clearCanvas('snwMazeAnimCanvas');
+  animCanvas.clear();
 }
 
 /**
@@ -440,8 +434,9 @@ function mazeClear() {
  * @param scale - Scale
  */
 function setScale(scale) {
-  SNW.maze.renderer.setRenderScale(scale);
-  SNW.maze.renderer.renderNodes(nodes, 'snwMazeMainCanvas');
+  mainCanvas.Scale = scale;
+  animCanvas.Scale = scale;
+  mainCanvas.renderNodes(nodes);
 }
 
 /**
@@ -456,10 +451,10 @@ function startAnim() {
   mazeClear();
   mazeAnimator.AnimationSpeed = animSpeed;
   let tempBuffer = [];
-  for(let i = 0; i < mazeAnimator.animBuffer.length; i++){
+  for (let i = 0; i < mazeAnimator.animBuffer.length; i++) {
     tempBuffer[i] = mazeAnimator.animBuffer[i];
   }
-  mazeAnimator.play().then(()=>{
+  mazeAnimator.play().then(() => {
     mazeAnimator.animBuffer = tempBuffer;
     document.getElementById('stopAnim').disabled = true;
   });

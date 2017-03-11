@@ -137,7 +137,7 @@ class SnwMazeAnimator {
   playNextFrame() {
     let curFrame = this.animBuffer[0];
     if (curFrame != null) {
-      SNW.maze.renderer.renderPath(curFrame.x, curFrame.y, curFrame.connNode.x, curFrame.connNode.y, curFrame.type, 'snwMazeAnimCanvas');
+      animCanvas.renderPath(curFrame.x, curFrame.y, curFrame.connNode.x, curFrame.connNode.y, curFrame.type);
       this.animBuffer.splice(0, 1);
     }
   }

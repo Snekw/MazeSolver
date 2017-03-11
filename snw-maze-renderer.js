@@ -13,247 +13,198 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 "use strict";
-window.SNW = window.SNW || {};
-
-SNW.maze = SNW.maze || {};
-
-SNW.maze.renderer = {
-  setRenderScale: _setScale,
-  setRenderSize: _setSize,
-  setRenderCanvasById: _setCanvasById,
-  getRenderBuffer: _getRenderBuffer,
-  setRenderBuffer: _setRenderBuffer,
-  renderBlock: _renderBlock,
-  renderPath: _renderPath,
-  renderNodes: _renderNodes,
-  clearCanvas: _clearCanvas
-};
-
-
-let rScale = 20;
-let rWidth = 1;
-let rHeight = 1;
-let rCanvas = {};
-let rCtx = {};
-
-let rBuffer = [[0, 1, 1, -1], [0, 2, 2, 0]];
-
-/**
- * Render a path
- * @param {Number} x - X coordinate
- * @param {Number} y - Y coordinate
- * @param {Number} ex - End X coordinate
- * @param {Number} ey - End Y coodinate
- * @param {Number} style - The render style
- * @param {String} canvas - The canvas to render to
- * @private
- */
-function _renderPath(x, y, ex, ey, style, canvas) {
-  let ax = x;
-  let aax = ex;
-  let ay = y;
-  let aay = ey;
-  //Flip the x an ex so that we can fill left to right
-  if (ex < x) {
-    ax = ex;
-    aax = x;
-  }
-  //Flip the y an ey so that we can fill left to right
-  if (ey < y) {
-    ay = ey;
-    aay = y;
-  }
-  let dx = aax - ax;
-  let dy = aay - ay;
-  rCtx[canvas].fillStyle = _getStyle(style);
-  //Need to add 1 to the delta
-  dx++;
-  dy++;
-  rCtx[canvas].fillRect(ax * rScale, ay * rScale, dx * rScale, dy * rScale);
-}
-
-/**
- * Render single maze block
- * @param x
- * @param y
- * @param style
- * @param {String} canvas - The canvas to render to
- * @private
- */
-function _renderBlock(x, y, style, canvas) {
-  rCtx[canvas].fillStyle = _getStyle(style);
-  rCtx[canvas].fillRect(x * rScale, y * rScale, rScale, rScale);
-}
-
-/**
- * Get the render style
- * @param style
- * @returns {String}
- * @private
- */
-function _getStyle(style) {
-  switch (style) {
-    case 0:
-      return '#000000';
-      break;
-    case 1:
-      return '#8ba2ff';
-      break;
-    case 2:
-      return '#0000ff';
-      break;
-    case 3:
-      return '#00ffff';
-      break;
-    case 4:
-      return '#ff0000';
-      break;
-    case 5:
-      return '#ffeb00';
-      break;
-    case 6:
-      return '#00ff8b';
-      break;
-    default:
-      return '#ff00ff';
-  }
-}
-
-/**
- * Set the render scale
- * @param {number} scale
- */
-function _setScale(scale) {
-  if (scale >= 1) {
-    rScale = scale;
-  } else {
-    rScale = 1;
-  }
-  //Update the info so it will be updated on next render
-  _setCanvasInfo();
-}
-
-/**
- * Set the renderer base size
- * Will be multiplied by render scale
- * @param {number} width
- * @param {number} height
- */
-function _setSize(width, height) {
-  if (width > 1) {
-    rWidth = width;
-  } else {
-    rWidth = 1;
-  }
-
-  if (height > 1) {
-    rHeight = height;
-  } else {
-    rHeight = 1;
-  }
-
-  let temp = [];
-
-  for (let i = 0; i < rHeight; i++) {
-    let t2 = [];
-    for (let d = 0; d < rWidth; d++) {
-      t2.push(-1);
-    }
-    temp.push(t2);
-  }
-
-  _setRenderBuffer(temp);
-
-  //Update the info so it will be updated on next render
-  _setCanvasInfo();
-}
-
-/**
- * Set the new size for the canvas and re-render
- * @private
- */
-function _setCanvasInfo() {
-  for (let canvas in rCanvas) {
-    if (!rCanvas.hasOwnProperty(canvas)) {
-      break;
-    }
-    if (rCanvas[canvas] == null || rCanvas[canvas].tagName != 'CANVAS') {
+class SnwMazeRenderer {
+  /**
+   * Initialize a new renderer
+   * @param {String} canvas - Canvas ID
+   * @param {Number} width - Canvas width
+   * @param {Number} height - Canvas height
+   * @param {Number} scale - Render scale
+   */
+  constructor(canvas, width, height, scale) {
+    this.canvas = document.getElementById(canvas);
+    if (this.canvas == null || this.canvas.tagName != 'CANVAS') {
       throw 'SnwRendered: BAD CANVAS!';
     }
+    this.ctx = this.canvas.getContext('2d');
+    this.width = width;
+    this.height = height;
+    this.scale = scale;
 
-    rCanvas[canvas].width = rWidth * rScale;
-    rCanvas[canvas].height = rHeight * rScale;
-    rCtx[canvas].width = rCanvas[canvas].width;
-    rCtx[canvas].height = rCanvas[canvas].height;
+    this.canvas.width = width * scale;
+    this.canvas.height = height * scale;
+    this.ctx.width = width * scale;
+    this.ctx.height = height * scale;
   }
-}
 
-/**
- * Set the
- * @param canvasArr
- */
-function _setCanvasById(...canvasArr) {
-  for (let i = 0; i < canvasArr.length; i++) {
-    rCanvas[canvasArr[i]] = document.getElementById(canvasArr[i]);
-    if (rCanvas[canvasArr[i]] == null) {
-      console.error('SNW-Maze-Renderer: Failed to set canvas. Bad id.');
+  /**
+   * Render a path
+   * @param {Number} x - Start X coordinate
+   * @param {Number} y - Start Y coordinate
+   * @param {Number} ex - End X coordinate
+   * @param {Number} ey - End Y coordinate
+   * @param {Number} style - Render style
+   */
+  renderPath(x, y, ex, ey, style) {
+    let ax = x;
+    let aax = ex;
+    let ay = y;
+    let aay = ey;
+    //Flip the x and ex so that we can fill from left to right
+    if (ex < x) {
+      ax = ex;
+      aax = x;
     }
-    rCtx[canvasArr[i]] = rCanvas[canvasArr[i]].getContext('2d');
+    //Flip the y and ey so that we can fill from left to right
+    if (ey < y) {
+      ay = ey;
+      aay = y;
+    }
+    let dx = aax - ax;
+    let dy = aay - ay;
+    this.ctx.fillStyle = SnwMazeRenderer.getStyle(style);
+    //Need to add 1 to the delta to render atleast one block at minimum
+    dx++;
+    dy++;
+    this.ctx.fillRect(ax * this.scale, ay * this.scale, dx * this.scale, dy * this.scale);
   }
-  _setCanvasInfo();
-}
 
-/**
- * Get the currently used render buffer
- * @returns {[*,*]}
- */
-function _getRenderBuffer() {
-  return rBuffer;
-}
-
-/**
- * Set the currently used buffer
- * @param {[*,*]} newBuffer
- */
-function _setRenderBuffer(newBuffer) {
-  if (newBuffer.length == rHeight && newBuffer[0].length == rWidth) {
-    rBuffer = newBuffer;
-  }
-}
-
-let rNi = false;
-/**
- * Render nods from array
- * @param {Array} nodes - Node array
- * @param {String} canvas - The canvas to render to
- * @private
- */
-function _renderNodes(nodes, canvas) {
-  // rNi shows whether we have rendered the node this pass or not
-  // Changes every render call
-  rNi = !rNi;
-  let rStartTime = performance.now();
-  for (let i = 0; i < nodes.length; i++) {
-    for (let key in nodes[i].connections) {
-      if (nodes[i].connections.hasOwnProperty(key)) {
-        if (nodes[i].connections[key] != null)
-          if (!nodes[i].connections[key].rendered != rNi) {
-            _renderPath(nodes[i].x, nodes[i].y, nodes[i].connections[key].x, nodes[i].connections[key].y, 1, canvas);
-          }
+  /**
+   * Render the nodes given in array
+   * @param {Array} nodes - The nodes to render
+   */
+  renderNodes(nodes) {
+    let rStartTime = performance.now();
+    for (let i = 0; i < nodes.length; i++) {
+      for (let key in nodes[i].connections) {
+        if (nodes[i].connections.hasOwnProperty(key)) {
+          if (nodes[i].connections[key] != null)
+            this.renderPath(nodes[i].x, nodes[i].y, nodes[i].connections[key].x, nodes[i].connections[key].y, 1);
+        }
       }
     }
-    nodes[i].rendered = rNi;
+    console.info('Node render time: ' + (performance.now() - rStartTime).toString());
   }
-  console.info('Node render time: ' + (performance.now() - rStartTime).toString());
-}
 
-/**
- * Clear a canvas
- * @param {String} canvas - The canvas to clear
- * @private
- */
-function _clearCanvas(canvas) {
-  if (rCtx[canvas]) {
-    rCtx[canvas].clearRect(0, 0, rWidth * rScale, rHeight * rScale);
+  /**
+   * Clear the canvas
+   */
+  clear() {
+    this.ctx.clearRect(0, 0, this.ScaledWidth, this.ScaledHeight);
+  }
+
+  /**
+   * Get a render style associated with style ID
+   * @param {Number} styleId - A style ID
+   * @returns {String}
+   */
+  static getStyle(styleId) {
+    switch (styleId) {
+      case 0:
+        return '#000000';
+        break;
+      case 1:
+        return '#8ba2ff';
+        break;
+      case 2:
+        return '#0000ff';
+        break;
+      case 3:
+        return '#00ffff';
+        break;
+      case 4:
+        return '#ff0000';
+        break;
+      case 5:
+        return '#ffeb00';
+        break;
+      case 6:
+        return '#00ff8b';
+        break;
+      default:
+        return '#ff00ff';
+    }
+  }
+
+  /**
+   * Set a render scale for the canvas
+   * @param {Number} scale - Render scale
+   * @constructor
+   */
+  set Scale(scale) {
+    if (scale >= 1) {
+      this.scale = scale;
+    } else {
+      this.scale = 1;
+    }
+    this.Width = this.width;
+    this.Height = this.height;
+  }
+
+  /**
+   * Get the render scale
+   * @returns {Number}
+   * @constructor
+   */
+  get Scale() {
+    return this.scale;
+  }
+
+  /**
+   * Set the width of the canvas
+   * @param {Number} width -  The desired widht
+   * @constructor
+   */
+  set Width(width) {
+    this.canvas.width = width * this.scale;
+    this.ctx.width = width * this.scale;
+    this.width = width;
+  }
+
+  /**
+   * Get the width of the canvas
+   * @returns {Number}
+   * @constructor
+   */
+  get Width() {
+    return this.width;
+  }
+
+  /**
+   * Set the height of the canvas
+   * @param {Number} height - The desired height
+   * @constructor
+   */
+  set Height(height) {
+    this.canvas.height = height * this.scale;
+    this.ctx.height = height * this.scale;
+    this.height = height;
+  }
+
+  /**
+   * Get height of the canvas
+   * @returns {Number}
+   * @constructor
+   */
+  get Height() {
+    return this.height;
+  }
+
+  /**
+   * Get the width of the canvas with scale
+   * @returns {number}
+   * @constructor
+   */
+  get ScaledWidth() {
+    return this.width * this.scale;
+  }
+
+  /**
+   * Get the height of the canvas with scale
+   * @returns {number}
+   * @constructor
+   */
+  get ScaledHeight() {
+    return this.height * this.scale;
   }
 }
