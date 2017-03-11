@@ -93,6 +93,11 @@ class SnwMazeRenderer {
     this.ctx.clearRect(0, 0, this.ScaledWidth, this.ScaledHeight);
   }
 
+  renderBlockStroke(x, y, style) {
+    this.ctx.strokeStyle = SnwMazeRenderer.getStyle(style);
+    this.ctx.strokeRect(x * this.scale, y * this.scale, this.scale, this.scale);
+  }
+
   /**
    * Get a render style associated with style ID
    * @param {Number} styleId - A style ID

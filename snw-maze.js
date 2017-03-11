@@ -16,6 +16,7 @@
 
 
 let mainCanvas = new SnwMazeRenderer('snwMazeMainCanvas', 10, 10, 20);
+let mazeEditor = new SnwMazeEditor();
 
 //Fields
 let mazeRenderData = [];
@@ -413,10 +414,12 @@ function doMaze() {
 
   //Render
   mainCanvas.renderNodes(nodes);
+  mazeEditor.updateCanvasInfo(mainCanvas.Width, mainCanvas.Height, mainCanvas.Scale);
 
   let timeTaken = new Date();
   let t = performance.now() - genStartTime;
   timeTaken.setTime(t);
+
 
   genTime.innerHTML = timeTaken.getMinutes() + 'm' + timeTaken.getSeconds() + 's' + timeTaken.getMilliseconds() + ' Raw: ' + t.toString();
 }
