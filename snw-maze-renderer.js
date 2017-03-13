@@ -110,8 +110,14 @@ class SnwMazeRenderer {
   }
 
   renderBlockStroke(x, y, style) {
-    this.ctx.strokeStyle = SnwMazeRenderer.getStyle(style);
-    this.ctx.strokeRect(x * this.scale, y * this.scale, this.scale, this.scale);
+    window.requestAnimationFrame(() => {
+      this.ctx.strokeStyle = SnwMazeRenderer.getStyle(style);
+      this.ctx.strokeRect(x * this.scale, y * this.scale, this.scale, this.scale);
+    });
+  }
+
+  renderBlock(x, y, style) {
+    this.renderPath(x, y, x, y, style);
   }
 
   /**

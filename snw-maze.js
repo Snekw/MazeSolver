@@ -19,7 +19,7 @@ let mainCanvas = new SnwMazeRenderer('snwMazeMainCanvas', 10, 10, 20);
 let mazeEditor = new SnwMazeEditor();
 
 //Fields
-let mazeRenderData = [];
+let mazeBlockData = [];
 let mazeNodeIndexChart = [];
 let nodes = [];
 
@@ -77,17 +77,27 @@ function initMaze() {
     }
     temp2.push(t);
   }
-  mazeRenderData = temp2;
+  mazeBlockData = temp2;
+}
 
+function createBlockData() {
+  nodes = [];
   updateMazeNodeIndexChart();
+  //Create the nodes
+  createNodes();
+
+  //Find the connections
+  for (let i = 0; i < nodes.length; i++) {
+    nodes[i].findConnections();
+  }
 }
 
 function updateMazeNodeIndexChart() {
-  let s = mazeRenderData.length;
+  let s = mazeBlockData.length;
   //Create a node index chart
   mazeNodeIndexChart = [];
   while (s--) {
-    let s2 = mazeRenderData[s].length;
+    let s2 = mazeBlockData[s].length;
     mazeNodeIndexChart[s] = [];
     while (s2--) {
       mazeNodeIndexChart[s][s2] = -1;
@@ -127,7 +137,7 @@ class MazeNode {
       let dy = 0;
       for (let y = this.y - 1; y > -1; y--) {
         dy++;
-        if (mazeRenderData[y][this.x] == 0) {
+        if (mazeBlockData[y][this.x] == 0) {
           break;
         }
 
@@ -148,7 +158,7 @@ class MazeNode {
       let dy = 0;
       for (let y = this.y + 1; y < mazeNodeIndexChart.length; y++) {
         dy++;
-        if (mazeRenderData[y][this.x] == 0) {
+        if (mazeBlockData[y][this.x] == 0) {
           break;
         }
 
@@ -169,7 +179,7 @@ class MazeNode {
       let dx = 0;
       for (let x = this.x - 1; x > -1; x--) {
         dx++;
-        if (mazeRenderData[this.y][x] == 0) {
+        if (mazeBlockData[this.y][x] == 0) {
           break;
         }
 
@@ -190,7 +200,7 @@ class MazeNode {
       let dx = 0;
       for (let x = this.x + 1; x < mazeNodeIndexChart[this.y].length; x++) {
         dx++;
-        if (mazeRenderData[this.y][x] == 0) {
+        if (mazeBlockData[this.y][x] == 0) {
           break;
         }
 
@@ -212,9 +222,9 @@ class MazeNode {
  * Create the nodes
  */
 function createNodes() {
-  for (let y = 0; y < mazeRenderData.length; y++) {
-    for (let x = 0; x < mazeRenderData[y].length; x++) {
-      if (mazeRenderData[y][x] == 1) {
+  for (let y = 0; y < mazeBlockData.length; y++) {
+    for (let x = 0; x < mazeBlockData[y].length; x++) {
+      if (mazeBlockData[y][x] == 1) {
         if (y == 0 || x == 0) {
           nodes.push(new MazeNode(x, y, SNW.maze.NodeType.START));
           nodes[nodes.length - 1].distance = {
@@ -224,7 +234,7 @@ function createNodes() {
             down: 0
           };
           mazeNodeIndexChart[y][x] = nodes.length - 1;
-        } else if (y == mazeRenderData.length - 1 || x == mazeRenderData[y].length - 1) {
+        } else if (y == mazeBlockData.length - 1 || x == mazeBlockData[y].length - 1) {
           nodes.push(new MazeNode(x, y, SNW.maze.NodeType.END));
           mazeNodeIndexChart[y][x] = nodes.length - 1;
         } else {
@@ -232,16 +242,16 @@ function createNodes() {
           let right = false;
           let up = false;
           let down = false;
-          if (mazeRenderData[y - 1][x] == 1) {
+          if (mazeBlockData[y - 1][x] == 1) {
             up = true;
           }
-          if (mazeRenderData[y + 1][x] == 1) {
+          if (mazeBlockData[y + 1][x] == 1) {
             down = true;
           }
-          if (mazeRenderData[y][x - 1] == 1) {
+          if (mazeBlockData[y][x - 1] == 1) {
             left = true;
           }
-          if (mazeRenderData[y][x + 1] == 1) {
+          if (mazeBlockData[y][x + 1] == 1) {
             right = true;
           }
 
@@ -520,21 +530,15 @@ function doMaze() {
 
   let genStartTime = performance.now();
   nodes = [];
-  mazeRenderData = [];
+  mazeBlockData = [];
 
   //Create and draw the maze
   initMaze();
 
-  //Create the nodes
-  createNodes();
+  createBlockData();
 
-  //Find the connections
-  for (let i = 0; i < nodes.length; i++) {
-    nodes[i].findConnections();
-  }
-
-  //Render the nodes
   mainCanvas.renderNodes(nodes);
+
   mazeEditor.updateCanvasInfo(mainCanvas.Width, mainCanvas.Height, mainCanvas.Scale);
 
   let timeTaken = new Date();

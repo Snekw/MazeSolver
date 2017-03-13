@@ -18,7 +18,8 @@ class SnwMazeEditor {
     this.canvas = new SnwMazeRenderer('snwMazeCursorCanvas', 10, 10, 10);
     this.canvas.canvas.addEventListener('mousemove', updateCursor);
     this.canvas.canvas.addEventListener('mouseleave', deleteCursor);
-    this.canvas.canvas.addEventListener('mousedown', mazeEditorClick);
+    this.canvas.canvas.addEventListener('mousedown', mazeEditorMouseDown);
+    this.canvas.canvas.addEventListener('mouseup', mazeEditorMouseUp);
     this.canvas.canvas.addEventListener('contextmenu', mazeContextMenu);
   }
 
@@ -28,13 +29,41 @@ class SnwMazeEditor {
     this.canvas.Height = height;
   }
 
-  renderCursor(x, y) {
-    this.canvas.clear();
-    this.canvas.renderBlockStroke(x, y, 4);
+  renderCursor() {
+    this.deleteCursor();
+    this.canvas.renderBlockStroke(this.x, this.y, 4);
   }
 
   deleteCursor() {
     this.canvas.clear();
+  }
+
+  /**
+   * Update the cursor position
+   * @param e - Mouse event
+   */
+  updateCursor(e) {
+    let m = SnwMazeEditor.GetMousePosInside(e);
+    if (m.x != this.x || m.y || this.y) {
+      this.x = m.x;
+      this.y = m.y;
+      mazeEditor.renderCursor();
+    }
+    switch (e.which) {
+      case 1:
+        mazeBlockData[m.y][m.x] = 1;
+        break;
+      case 3:
+        mazeBlockData[m.y][m.x] = 0;
+        break;
+      default:
+        return;
+        break;
+    }
+
+    //Render the added wall/path
+    mainCanvas.renderBlock(this.x, this.y, mazeBlockData[m.y][m.x]);
+    animCanvas.clear();
   }
 
   static GetMousePosInside(e) {
@@ -46,34 +75,23 @@ class SnwMazeEditor {
 }
 
 function updateCursor(e) {
-  let m = SnwMazeEditor.GetMousePosInside(e);
-  mazeEditor.renderCursor(m.x, m.y);
+  mazeEditor.updateCursor(e);
 }
 
 function deleteCursor() {
   mazeEditor.deleteCursor();
 }
 
-function mazeEditorClick(e) {
-  let m = SnwMazeEditor.GetMousePosInside(e);
-  switch (e.which) {
-    case 1:
-      mazeRenderData[m.y][m.x] = 1;
-      break;
-    case 3:
-      mazeRenderData[m.y][m.x] = 0;
-  }
-  nodes = [];
-  updateMazeNodeIndexChart();
-  //Create the nodes
-  createNodes();
+function mazeEditorMouseDown(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  mazeEditor.updateCursor(e);
+  return false;
+}
 
-  //Find the connections
-  for (let i = 0; i < nodes.length; i++) {
-    nodes[i].findConnections();
-  }
-  mainCanvas.renderNodes(nodes);
-  animCanvas.clear();
+function mazeEditorMouseUp() {
+  //Update the maze block data
+  createBlockData();
 }
 
 function getMouseRelativePosition(e) {
