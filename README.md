@@ -1,12 +1,12 @@
-#What?
+# What?
 
 A JavaScript based maze solver.
 
-#Why?
+# Why?
 
 Because I can.
 
-#How?
+# How?
 
 By analyzing the image selected from the dropdown or file browser, we can determine where the walls and paths are.
 White (255, 255, 255, 255) is a path and black (0, 0, 0, 0) is a wall. The start point should be on the top or left side of the image and
@@ -24,7 +24,7 @@ animation will stop and the pathfinding method will finish the solving.
 
 
 
-#License?
+# License?
 
 MIT  
 See LICENSE.md for more info
