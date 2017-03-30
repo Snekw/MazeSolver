@@ -12,7 +12,7 @@
  * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-"use strict";
+'use strict';
 window.SNW = window.SNW || {};
 SNW.maze = SNW.maze || {};
 SNW.maze.pathFinding = SNW.maze.pathFinding || {};
@@ -24,7 +24,7 @@ class SnwAstar extends SnwPathFind {
    * @param {Number} startI - Start node index
    * @param {Number} endI - End node index
    */
-  init(startI, endI) {
+  init (startI, endI) {
     this.nodes = nodes;
     this.start = startI;
     this.end = endI;
@@ -63,7 +63,7 @@ class SnwAstar extends SnwPathFind {
    * @abstract
    * @returns {null}
    */
-  solve(nodes, startI, endI, cb) {
+  solve (nodes, startI, endI, cb) {
     this.init(startI, endI);
 
     this.astar().then(() => {
@@ -77,7 +77,7 @@ class SnwAstar extends SnwPathFind {
    * The implementation of A*
    * @returns {Promise.<void>}
    */
-  async astar() {
+  async astar () {
     while (this.workSet.length > 0 && !this.endFound) {
       let i = 0;
       let curMinDist = Number.MAX_SAFE_INTEGER;
@@ -95,7 +95,7 @@ class SnwAstar extends SnwPathFind {
         this.workSet.splice(i, 1);
         continue;
       }
-      if (this.workSet[i].type == SNW.maze.NodeType.END) {
+      if (this.workSet[i].type === SNW.maze.NodeType.END) {
         this.endFound = true;
         this.endNode = this.workSet[i];
         break;
@@ -129,9 +129,11 @@ class SnwAstar extends SnwPathFind {
 
       for (let key in this.workSet[i].connections) {
         if (this.workSet[i].connections.hasOwnProperty(key)) {
-          if (this.workSet[i].connections[key] != null) {
-            if (this.workSet[i].dDistance + this.workSet[i].connections[key].distance[key] < this.workSet[i].connections[key].dDistance) {
-              this.workSet[i].connections[key].dDistance = this.workSet[i].dDistance + this.workSet[i].connections[key].distance[key];
+          if (this.workSet[i].connections[key] !== null) {
+            if (this.workSet[i].dDistance + this.workSet[i].connections[key].distance[key] <
+              this.workSet[i].connections[key].dDistance) {
+              this.workSet[i].connections[key].dDistance = this.workSet[i].dDistance +
+                this.workSet[i].connections[key].distance[key];
               this.workSet[i].connections[key].via = this.workSet[i];
             }
             //Push the node to work set

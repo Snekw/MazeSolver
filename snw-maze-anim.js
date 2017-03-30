@@ -12,7 +12,7 @@
  * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-"use strict";
+'use strict';
 /**
  * SnwMazeAnimator handles the animation needs for the path finding
  */
@@ -20,11 +20,16 @@ class SnwMazeAnimator {
   /**
    * Initialize
    */
-  constructor() {
+  constructor () {
     this.animationSpeed = 1;
     this.animBuffer = [];
     this.isRTAnim = false;
     this.shouldStop = false;
+    this.renderer = mainCanvas;
+  }
+
+  set Renderer (val) {
+    this.renderer = val;
   }
 
   /**
@@ -32,7 +37,7 @@ class SnwMazeAnimator {
    * @param {Boolean} val - True/False
    * @constructor
    */
-  set RealTimeAnimation(val) {
+  set RealTimeAnimation (val) {
     this.isRTAnim = val;
   }
 
@@ -41,7 +46,7 @@ class SnwMazeAnimator {
    * @param {Number} speed - Animation speed
    * @constructor
    */
-  set AnimationSpeed(speed) {
+  set AnimationSpeed (speed) {
     if (!isNaN(speed)) {
       speed = parseInt(speed);
       this.animationSpeed = speed;
@@ -58,7 +63,7 @@ class SnwMazeAnimator {
    * Play the animation from current buffer
    * @returns {Promise.<void>}
    */
-  async play() {
+  async play () {
     this.shouldStop = false;
     while (this.animBuffer.length > 0 && !this.shouldStop) {
       this.playNextFrame();
@@ -82,7 +87,7 @@ class SnwMazeAnimator {
   /**
    * Stop the currently playing animation
    */
-  stopAnimation() {
+  stopAnimation () {
     this.shouldStop = true;
   }
 
@@ -92,7 +97,7 @@ class SnwMazeAnimator {
    * @returns {Number} - Delay in ms
    * @private
    */
-  static _getSpeed(speed) {
+  static _getSpeed (speed) {
     switch (speed) {
       case 1:
         speed = 1000;
@@ -134,11 +139,14 @@ class SnwMazeAnimator {
   /**
    * Play the next frame from animation buffer
    */
-  playNextFrame() {
+  playNextFrame (draw = true) {
     let curFrame = this.animBuffer[0];
-    if (curFrame != null) {
-      animCanvas.renderPath(curFrame.x, curFrame.y, curFrame.connNode.x, curFrame.connNode.y, curFrame.type);
+    if (curFrame !== null) {
+      this.renderer.renderPath(curFrame.x, curFrame.y, curFrame.connNode.x, curFrame.connNode.y,
+        curFrame.type);
       this.animBuffer.splice(0, 1);
+      if (draw)
+        this.renderer.draw();
     }
   }
 
@@ -146,14 +154,15 @@ class SnwMazeAnimator {
    * Play next frame as real time frame
    * @returns {Promise.<void>}
    */
-  async playRtFrame() {
+  async playRtFrame () {
     let speed = this.animationSpeed || 1;
     if (this.animationSpeed > 10) {
       let overTen = speed - 10;
       if (this.animBuffer.length > overTen) {
         while (this.animBuffer.length > 0) {
-          this.playNextFrame();
+          this.playNextFrame(false);
         }
+        this.renderer.draw();
         speed = 1;
         await SnwMazeAnimator.sleep(speed);
       }
@@ -169,8 +178,8 @@ class SnwMazeAnimator {
    * @param frame - The animation frame
    * @returns {Promise.<void>}
    */
-  async pushToAnimBuffer(frame) {
-    if (frame != null) {
+  async pushToAnimBuffer (frame) {
+    if (frame !== null) {
       this.animBuffer.push(frame);
       if (this.isRTAnim) {
         await this.playRtFrame();
@@ -181,7 +190,7 @@ class SnwMazeAnimator {
   /**
    * Clear the animation buffer
    */
-  clearAnimBuffer() {
+  clearAnimBuffer () {
     this.animBuffer = [];
   }
 
@@ -190,7 +199,7 @@ class SnwMazeAnimator {
    * @param ms
    * @returns {Promise}
    */
-  static sleep(ms) {
+  static sleep (ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 }

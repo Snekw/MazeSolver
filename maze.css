@@ -39,6 +39,8 @@ canvas{
     top: 0;
     left: 0;
     margin-bottom: 10px;
+    width: 802px;
+    height: 802px;
 }
 
 .bgTransparent{

@@ -44,7 +44,7 @@ class SnwMazeEditor {
    */
   updateCursor(e) {
     let m = SnwMazeEditor.GetMousePosInside(e);
-    if (m.x != this.x || m.y || this.y) {
+    if (m.x !== this.x || m.y || this.y) {
       this.x = m.x;
       this.y = m.y;
       mazeEditor.renderCursor();
@@ -63,7 +63,8 @@ class SnwMazeEditor {
 
     //Render the added wall/path
     mainCanvas.renderBlock(this.x, this.y, mazeBlockData[m.y][m.x]);
-    animCanvas.clear();
+    mainCanvas.clear();
+    // animCanvas.clear();
   }
 
   static GetMousePosInside(e) {

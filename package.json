@@ -5,7 +5,7 @@
     "browser-sync": "^2.18.8"
   },
   "scripts": {
-    "bsync": "browser-sync start --server --files \"**/*.*\""
+    "bsync": "browser-sync start --server --files \"./**/*.*\""
   },
   "dependencies": {
     "png-js": "^0.1.1"

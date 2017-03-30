@@ -12,10 +12,10 @@
  * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-"use strict";
-
-
-let mainCanvas = new SnwMazeRenderer('snwMazeMainCanvas', 10, 10, 20);
+'use strict';
+window.SNW.debug = false;
+let mainCanvas = new SnwMazeWebGlRenderer('snwMazeMainCanvas', 10, 10, 20);
+// let mainCanvas = new SnwMazeRenderer('snwMazeMainCanvas', 10, 10, 20);
 let mazeEditor = new SnwMazeEditor();
 
 //Fields
@@ -29,16 +29,18 @@ let stopAnimProgress = false;
 let recordAnim = true;
 let animPathFind = true;
 let animFoundPath = true;
-let animCanvas = new SnwMazeRenderer('snwMazeAnimCanvas', 10, 10, 20);
+// let animCanvas = new SnwMazeRenderer('snwMazeAnimCanvas', 10, 10, 20);
 
 /**
  * Load the img data to smaller array and draw the maze
  */
-function initMaze() {
+function initMaze () {
   mazeAnimator = null;
+
   document.getElementById('playAnim').disabled = true;
   document.getElementById('stopAnim').disabled = true;
   let img = document.getElementById('img');
+  mainCanvas = new SnwMazeWebGlRenderer('snwMazeMainCanvas', img.width, img.height, 20);
 
   //Create temporary canvas that we use to extract image data
   let tempCanvas = document.createElement('canvas');
@@ -54,7 +56,7 @@ function initMaze() {
   //White = 1 = pathway
   //Black = 0 = wall
   for (let i = 0; i < imgData.data.length; i += 4) {
-    if (imgData.data[i] == 255) {
+    if (imgData.data[i] === 255) {
       temp.push(1);
     } else {
       temp.push(0);
@@ -62,8 +64,8 @@ function initMaze() {
   }
 
   //Update the renderer size
-  animCanvas.Height = img.height;
-  animCanvas.Width = img.width;
+  // animCanvas.Height = img.height;
+  // animCanvas.Width = img.width;
   mainCanvas.Height = img.height;
   mainCanvas.Width = img.width;
 
@@ -80,7 +82,7 @@ function initMaze() {
   mazeBlockData = temp2;
 }
 
-function createBlockData() {
+function createBlockData () {
   nodes = [];
   updateMazeNodeIndexChart();
   //Create the nodes
@@ -92,7 +94,7 @@ function createBlockData() {
   }
 }
 
-function updateMazeNodeIndexChart() {
+function updateMazeNodeIndexChart () {
   let s = mazeBlockData.length;
   //Create a node index chart
   mazeNodeIndexChart = [];
@@ -116,7 +118,7 @@ SNW.maze.NodeType = {
  * Maze Node class
  */
 class MazeNode {
-  constructor(x, y, type) {
+  constructor (x, y, type) {
     this.x = x;
     this.y = y;
     this.type = type || SNW.maze.NodeType.NORMAL;
@@ -131,22 +133,23 @@ class MazeNode {
   /**
    * Find the connections this node has
    */
-  findConnections() {
+  findConnections () {
     //Connections down
-    if (this.connections.down == null) {
+    if (this.connections.down === null) {
       let dy = 0;
-      for (let y = this.y - 1; y > -1; y--) {
+      for (let y = this.y + 1; y < mazeNodeIndexChart.length; y++) {
         dy++;
-        if (mazeBlockData[y][this.x] == 0) {
+        if (mazeBlockData[y][this.x] === 0) {
           break;
         }
 
-        if (mazeNodeIndexChart[y][this.x] != -1) {
+        if (mazeNodeIndexChart[y][this.x] !== -1) {
           this.connections.down = nodes[mazeNodeIndexChart[y][this.x]];
           this.connections.down.distance = this.connections.down.distance || {};
           this.connections.down.distance.down = dy;
           nodes[mazeNodeIndexChart[y][this.x]].connections.up = this;
-          nodes[mazeNodeIndexChart[y][this.x]].connections.up.distance = nodes[mazeNodeIndexChart[y][this.x]].connections.up.distance || {};
+          nodes[mazeNodeIndexChart[y][this.x]].connections.up.distance = nodes[mazeNodeIndexChart[y][this.x]].connections.up.distance ||
+            {};
           nodes[mazeNodeIndexChart[y][this.x]].connections.up.distance.up = dy;
           break;
         }
@@ -154,20 +157,21 @@ class MazeNode {
     }
 
     //Connections up
-    if (this.connections.up == null) {
+    if (this.connections.up === null) {
       let dy = 0;
-      for (let y = this.y + 1; y < mazeNodeIndexChart.length; y++) {
+      for (let y = this.y - 1; y > -1; y--) {
         dy++;
-        if (mazeBlockData[y][this.x] == 0) {
+        if (mazeBlockData[y][this.x] === 0) {
           break;
         }
 
-        if (mazeNodeIndexChart[y][this.x] != -1) {
+        if (mazeNodeIndexChart[y][this.x] !== -1) {
           this.connections.up = nodes[mazeNodeIndexChart[y][this.x]];
           this.connections.up.distance = this.connections.up.distance || {};
           this.connections.up.distance.up = dy;
           nodes[mazeNodeIndexChart[y][this.x]].connections.down = this;
-          nodes[mazeNodeIndexChart[y][this.x]].connections.down.distance = nodes[mazeNodeIndexChart[y][this.x]].connections.down.distance || {};
+          nodes[mazeNodeIndexChart[y][this.x]].connections.down.distance = nodes[mazeNodeIndexChart[y][this.x]].connections.down.distance ||
+            {};
           nodes[mazeNodeIndexChart[y][this.x]].connections.down.distance.down = dy;
           break;
         }
@@ -175,20 +179,21 @@ class MazeNode {
     }
 
     //Connections right
-    if (this.connections.right == null) {
+    if (this.connections.right === null) {
       let dx = 0;
       for (let x = this.x - 1; x > -1; x--) {
         dx++;
-        if (mazeBlockData[this.y][x] == 0) {
+        if (mazeBlockData[this.y][x] === 0) {
           break;
         }
 
-        if (mazeNodeIndexChart[this.y][x] != -1) {
+        if (mazeNodeIndexChart[this.y][x] !== -1) {
           this.connections.right = nodes[mazeNodeIndexChart[this.y][x]];
           this.connections.right.distance = this.connections.right.distance || {};
           this.connections.right.distance.right = dx;
           nodes[mazeNodeIndexChart[this.y][x]].connections.left = this;
-          nodes[mazeNodeIndexChart[this.y][x]].connections.left.distance = nodes[mazeNodeIndexChart[this.y][x]].connections.left.distance || {};
+          nodes[mazeNodeIndexChart[this.y][x]].connections.left.distance = nodes[mazeNodeIndexChart[this.y][x]].connections.left.distance ||
+            {};
           nodes[mazeNodeIndexChart[this.y][x]].connections.left.distance.left = dx;
           break;
         }
@@ -196,20 +201,21 @@ class MazeNode {
     }
 
     //Connections left
-    if (this.connections.left == null) {
+    if (this.connections.left === null) {
       let dx = 0;
       for (let x = this.x + 1; x < mazeNodeIndexChart[this.y].length; x++) {
         dx++;
-        if (mazeBlockData[this.y][x] == 0) {
+        if (mazeBlockData[this.y][x] === 0) {
           break;
         }
 
-        if (mazeNodeIndexChart[this.y][x] != -1) {
+        if (mazeNodeIndexChart[this.y][x] !== -1) {
           this.connections.left = nodes[mazeNodeIndexChart[this.y][x]];
           this.connections.left.distance = this.connections.left.distance || {};
           this.connections.left.distance.left = dx;
           nodes[mazeNodeIndexChart[this.y][x]].connections.right = this;
-          nodes[mazeNodeIndexChart[this.y][x]].connections.right.distance = nodes[mazeNodeIndexChart[this.y][x]].connections.right.distance || {};
+          nodes[mazeNodeIndexChart[this.y][x]].connections.right.distance = nodes[mazeNodeIndexChart[this.y][x]].connections.right.distance ||
+            {};
           nodes[mazeNodeIndexChart[this.y][x]].connections.right.distance.right = dx;
           break;
         }
@@ -221,11 +227,11 @@ class MazeNode {
 /**
  * Create the nodes
  */
-function createNodes() {
+function createNodes () {
   for (let y = 0; y < mazeBlockData.length; y++) {
     for (let x = 0; x < mazeBlockData[y].length; x++) {
-      if (mazeBlockData[y][x] == 1) {
-        if (y == 0 || x == 0) {
+      if (mazeBlockData[y][x] === 1) {
+        if (y === 0 || x === 0) {
           nodes.push(new MazeNode(x, y, SNW.maze.NodeType.START));
           nodes[nodes.length - 1].distance = {
             left: 0,
@@ -234,7 +240,7 @@ function createNodes() {
             down: 0
           };
           mazeNodeIndexChart[y][x] = nodes.length - 1;
-        } else if (y == mazeBlockData.length - 1 || x == mazeBlockData[y].length - 1) {
+        } else if (y === mazeBlockData.length - 1 || x === mazeBlockData[y].length - 1) {
           nodes.push(new MazeNode(x, y, SNW.maze.NodeType.END));
           mazeNodeIndexChart[y][x] = nodes.length - 1;
         } else {
@@ -242,16 +248,16 @@ function createNodes() {
           let right = false;
           let up = false;
           let down = false;
-          if (mazeBlockData[y - 1][x] == 1) {
+          if (mazeBlockData[y - 1][x] === 1) {
             up = true;
           }
-          if (mazeBlockData[y + 1][x] == 1) {
+          if (mazeBlockData[y + 1][x] === 1) {
             down = true;
           }
-          if (mazeBlockData[y][x - 1] == 1) {
+          if (mazeBlockData[y][x - 1] === 1) {
             left = true;
           }
-          if (mazeBlockData[y][x + 1] == 1) {
+          if (mazeBlockData[y][x + 1] === 1) {
             right = true;
           }
 
@@ -289,7 +295,7 @@ class FoundPath {
    * @param visited - Visited nodes array
    * @param animator - The animator from the path finding method
    */
-  constructor(path, visited, animator) {
+  constructor (path, visited, animator) {
     this.path = path || [];
     this.visited = visited || [];
     this.animator = animator || [];
@@ -300,8 +306,8 @@ let startTime = 0;
 /**
  * Call the selected path finding method and render results
  */
-function solve() {
-  animCanvas.clear();
+function solve () {
+  mainCanvas.clear();
   document.getElementById('playAnim').disabled = true;
   document.getElementById('stopAnim').disabled = true;
   recordAnim = document.getElementById('recordAnimation').checked;
@@ -315,9 +321,9 @@ function solve() {
   let endI = -1;
   for (let i = 0; i < nodes.length; i++) {
     n.push(nodes[i]);
-    if (nodes[i].type == SNW.maze.NodeType.START) {
+    if (nodes[i].type === SNW.maze.NodeType.START) {
       startI = i;
-    } else if (nodes[i].type == SNW.maze.NodeType.END) {
+    } else if (nodes[i].type === SNW.maze.NodeType.END) {
       endI = i;
     }
   }
@@ -331,23 +337,26 @@ function solve() {
  * Render the solved maze
  * @param {FoundPath} pathRet - The returned FoundPath object
  */
-function renderSolved(pathRet) {
+function renderSolved (pathRet) {
   let endTime = performance.now();
 
   let renderStart = performance.now();
   let path = pathRet.path;
   let visited = pathRet.visited;
 
+  console.log(path);
   mazeAnimator = pathRet.animator;
+  mazeAnimator.Renderer = mainCanvas;
 
   document.getElementById('playAnim').disabled = mazeAnimator.isRTAnim;
 
   //Render the visited paths and found path
   for (let i = 0; i < visited.length; i++) {
-    animCanvas.renderPath(visited[i].x, visited[i].y, visited[i].connNode.x, visited[i].connNode.y, 6);
+    mainCanvas.renderPath(visited[i].x, visited[i].y, visited[i].connNode.x, visited[i].connNode.y,
+      6);
   }
   for (let i = 0; i < path.length; i++) {
-    animCanvas.renderPath(path[i].x, path[i].y, path[i].connNode.x, path[i].connNode.y, 5);
+    mainCanvas.renderPath(path[i].x, path[i].y, path[i].connNode.x, path[i].connNode.y, 5);
   }
 
   let rt = performance.now() - renderStart;
@@ -356,14 +365,15 @@ function renderSolved(pathRet) {
   let t = endTime - startTime;
   let timeTaken = new Date();
   timeTaken.setTime(t);
-  document.getElementById('pathTime').innerHTML = timeTaken.getMinutes() + 'm' + timeTaken.getSeconds() + 's' + timeTaken.getMilliseconds() + ' Raw: ' + t.toString();
+  document.getElementById('pathTime').innerHTML = timeTaken.getMinutes() + 'm' +
+    timeTaken.getSeconds() + 's' + timeTaken.getMilliseconds() + ' Raw: ' + t.toString();
 
 }
 
 /**
  * Image selection form the selection box
  */
-function selectImage() {
+function selectImage () {
   let imgSel = document.getElementById('imgSel');
   let img = imgSel[imgSel.selectedIndex].label;
   _loadImg('mazes/maze-' + img + '.png');
@@ -373,7 +383,7 @@ function selectImage() {
  * Image selection from local computer
  * @param ele - The selection box
  */
-function selectImageFromFile(ele) {
+function selectImageFromFile (ele) {
   console.log(ele);
   let file = ele.files[0];
 
@@ -390,7 +400,7 @@ function selectImageFromFile(ele) {
  * @param img - The image
  * @private
  */
-function _loadImg(img) {
+function _loadImg (img) {
   let temp = new Image();
   temp.onload = function () {
     document.getElementById('img').src = img;
@@ -403,17 +413,17 @@ function _loadImg(img) {
  * Remove the solved data from maze
  * -- Reloads the maze
  */
-function mazeClear() {
-  animCanvas.clear();
+function mazeClear () {
+  mainCanvas.clear();
 }
 
 /**
  * Set the rendering scale
  * @param scale - Scale
  */
-function setScale(scale) {
+function setScale (scale) {
   mainCanvas.Scale = scale;
-  animCanvas.Scale = scale;
+  // animCanvas.Scale = scale;
   mainCanvas.renderNodes(nodes);
   mazeEditor.updateCanvasInfo(mainCanvas.Width, mainCanvas.Height, mainCanvas.Scale);
 }
@@ -421,8 +431,8 @@ function setScale(scale) {
 /**
  * Play the current animation
  */
-function startAnim() {
-  if (mazeAnimator == null)
+function startAnim () {
+  if (mazeAnimator === null)
     return;
 
   document.getElementById('stopAnim').disabled = false;
@@ -442,8 +452,8 @@ function startAnim() {
 /**
  * Stop the currently playing animation
  */
-function stopAnim() {
-  if (mazeAnimator == null)
+function stopAnim () {
+  if (mazeAnimator === null)
     return;
 
   mazeAnimator.stopAnimation();
@@ -455,7 +465,7 @@ function stopAnim() {
  * Update the method checkbox with available path finding methods
  * @private
  */
-function _updateAvailableMethods() {
+function _updateAvailableMethods () {
   let methodBox = document.getElementById('method');
   for (let key in SNW.maze.pathFinding) {
     if (SNW.maze.pathFinding.hasOwnProperty(key)) {
@@ -470,10 +480,10 @@ function _updateAvailableMethods() {
 /**
  * Toggle the visibility of the reference image
  */
-function toggleShowImage() {
+function toggleShowImage () {
   let img = document.getElementById('img');
   let imgSep = document.getElementById('imgSep');
-  if (img.className == 'hide') {
+  if (img.className === 'hide') {
     imgSep.className = 'show';
     img.className = 'show';
   } else {
@@ -486,7 +496,7 @@ function toggleShowImage() {
  * Set the animation speed
  * @param {Number} speed - The animation speed
  */
-function setAnimationSpeed(speed) {
+function setAnimationSpeed (speed) {
   if (isNaN(speed)) {
     try {
       speed = parseInt(speed);
@@ -500,7 +510,7 @@ function setAnimationSpeed(speed) {
       SNW.maze.pathFinding[key].setAnimSpeed(speed);
     }
   }
-  if (mazeAnimator != null) {
+  if (mazeAnimator !== null) {
     mazeAnimator.AnimationSpeed = speed;
   }
 }
@@ -508,7 +518,7 @@ function setAnimationSpeed(speed) {
 /**
  * Update the animation controls
  */
-function updateAnimCheckBoxes() {
+function updateAnimCheckBoxes () {
   let tggl = !document.getElementById('recordAnimation').checked;
   document.getElementById('rtAnim').disabled = tggl;
   document.getElementById('animPathFind').disabled = tggl;
@@ -516,11 +526,15 @@ function updateAnimCheckBoxes() {
   document.getElementById('animSpeed').disabled = tggl;
 }
 
+function debugToggle () {
+  window.SNW.debug = !window.SNW.debug;
+}
+
 /**
  * Do all of the file reading to create the nodes
  * and render the maze
  */
-function doMaze() {
+function doMaze () {
   let genTime = document.getElementById('genTime');
   genTime.innerHTML = '';
 
@@ -545,8 +559,8 @@ function doMaze() {
   let t = performance.now() - genStartTime;
   timeTaken.setTime(t);
 
-
-  genTime.innerHTML = timeTaken.getMinutes() + 'm' + timeTaken.getSeconds() + 's' + timeTaken.getMilliseconds() + ' Raw: ' + t.toString();
+  genTime.innerHTML = timeTaken.getMinutes() + 'm' + timeTaken.getSeconds() + 's' +
+    timeTaken.getMilliseconds() + ' Raw: ' + t.toString();
 }
 
 _updateAvailableMethods();

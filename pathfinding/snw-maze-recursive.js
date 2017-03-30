@@ -12,7 +12,7 @@
  * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-"use strict";
+'use strict';
 
 window.SNW = window.SNW || {};
 SNW.maze = SNW.maze || {};
@@ -29,7 +29,7 @@ class SnwRecursive extends SnwPathFind {
    * @param endI - End node index
    * @returns {FoundPath}
    */
-  init(solveNodes, startI, endI) {
+  init (solveNodes, startI, endI) {
     this.start = startI;
     this.end = endI;
     this.nodes = solveNodes;
@@ -54,7 +54,7 @@ class SnwRecursive extends SnwPathFind {
    * @abstract
    * @returns {null}
    */
-  solve(nodes, startI, endI, cb) {
+  solve (nodes, startI, endI, cb) {
     this.init(nodes, startI, endI);
 
     this._checkNodes(this.nodes[this.start]).then(() => {
@@ -70,13 +70,13 @@ class SnwRecursive extends SnwPathFind {
    * @param lastNode - Last node
    * @private
    */
-  async _checkNodes(node, lastNode) {
+  async _checkNodes (node, lastNode) {
     if (this.endFound) {
       return;
     }
     if (recordAnim && animPathFind) {
       let n = {};
-      if(lastNode){
+      if (lastNode) {
         n = {
           x: node.x,
           y: node.y,
@@ -86,7 +86,7 @@ class SnwRecursive extends SnwPathFind {
             y: lastNode.y
           }
         };
-      }else{
+      } else {
         n = {
           x: node.x,
           y: node.y,
@@ -102,30 +102,29 @@ class SnwRecursive extends SnwPathFind {
       lastNode = node;
     }
     node.visited = true;
-    if (node.type == SNW.maze.NodeType.END) {
+    if (node.type === SNW.maze.NodeType.END) {
       this.endFound = true;
       this.endNode = node;
       return;
     }
 
-    if (node.connections.left != null && !node.connections.left.visited) {
+    if (node.connections.left !== null && !node.connections.left.visited) {
       node.connections.left.via = node;
       await this._checkNodes(node.connections.left, lastNode);
     }
-    if (node.connections.right != null && !node.connections.right.visited) {
+    if (node.connections.right !== null && !node.connections.right.visited) {
       node.connections.right.via = node;
       await this._checkNodes(node.connections.right, lastNode);
     }
-    if (node.connections.down != null && !node.connections.down.visited) {
+    if (node.connections.down !== null && !node.connections.down.visited) {
       node.connections.down.via = node;
       await this._checkNodes(node.connections.down, lastNode);
     }
-    if (node.connections.up != null && !node.connections.up.visited) {
+    if (node.connections.up !== null && !node.connections.up.visited) {
       node.connections.up.via = node;
       await this._checkNodes(node.connections.up, lastNode);
     }
   }
 }
-
 
 SNW.maze.pathFinding.recursive = new SnwRecursive('Recursive');
