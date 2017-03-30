@@ -32,14 +32,11 @@ class SnwMazeRenderer {
     }
     this.gl = this.canvas.getContext('2d');
     this.gl.imageSmoothingEnabled = false;
-    this.width = width;
-    this.height = height;
-    this.scale = scale;
+    this.Scale = scale;
+    this.Width = width;
+    this.Height = height;
 
-    this.canvas.width = width;
-    this.canvas.height = height;
-    this.gl.width = width;
-    this.gl.height = height;
+    this.resize();
   }
 
   /**
@@ -51,27 +48,29 @@ class SnwMazeRenderer {
    * @param {Number} style - Render style
    */
   renderPath (x, y, ex, ey, style) {
-    let ax = x;
-    let aax = ex;
-    let ay = y;
-    let aay = ey;
-    //Flip the x and ex so that we can fill from left to right
-    if (ex < x) {
-      ax = ex;
-      aax = x;
+    if (x === ex && y !== ey) {
+      let ay = y;
+      let aey = ey;
+      if (ey < y) {
+        ay = ey;
+        aey = y;
+      }
+      for (let i = ay; i <= aey; i++) {
+        this.renderBlock(x, i, style);
+      }
+    } else if (x !== ex && y === ey) {
+      let ax = x;
+      let aex = ex;
+      if (ex < x) {
+        ax = ex;
+        aex = x;
+      }
+      for (let i = ax; i <= aex; i++) {
+        this.renderBlock(i, y, style);
+      }
+    } else {
+      this.renderBlock(x, y, style);
     }
-    //Flip the y and ey so that we can fill from left to right
-    if (ey < y) {
-      ay = ey;
-      aay = y;
-    }
-    let dx = aax - ax;
-    let dy = aay - ay;
-    this.gl.fillStyle = this.getStyle(style);
-    //Need to add 1 to the delta to render atleast one block at minimum
-    dx++;
-    dy++;
-    this.gl.fillRect(ax, ay, dx + 1, dy + 1);
   }
 
   /**
@@ -115,7 +114,7 @@ class SnwMazeRenderer {
    * Clear the canvas
    */
   clear () {
-    this.gl.clearRect(0, 0, this.width, this.height);
+    this.gl.clearRect(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
   }
 
   renderBlockStroke (x, y, style) {
@@ -126,7 +125,8 @@ class SnwMazeRenderer {
   }
 
   renderBlock (x, y, style) {
-    this.renderPath(x, y, x, y, style);
+    this.gl.fillStyle = this.getStyle(style);
+    this.gl.fillRect(x * this.scale, y * this.scale, this.scale, this.scale);
   }
 
   /**
@@ -192,9 +192,10 @@ class SnwMazeRenderer {
    * @constructor
    */
   set Width (width) {
-    this.canvas.width = width;
-    this.gl.width = width;
+    // this.canvas.width = width;
+    // this.gl.width = width;
     this.width = width;
+    this.canvas.style.width = this.ScaledWidth +'px';
   }
 
   /**
@@ -212,9 +213,10 @@ class SnwMazeRenderer {
    * @constructor
    */
   set Height (height) {
-    this.canvas.height = height;
-    this.gl.height = height;
+    // this.canvas.height = height;
+    // this.gl.height = height;
     this.height = height;
+    this.canvas.style.height = this.ScaledHeight +'px';
   }
 
   /**
@@ -258,6 +260,8 @@ class SnwMazeRenderer {
       this.canvas.height = displayHeight;
     }
   }
+
+  draw () {}
 }
 
 class SnwMazeWebGlRenderer extends SnwMazeRenderer {
@@ -268,8 +272,9 @@ class SnwMazeWebGlRenderer extends SnwMazeRenderer {
     this.canvas = document.getElementById(canvas);
     this.canvas.width = width;
     this.canvas.height = height;
-    this.width = width;
-    this.height = height;
+    this.Scale = scale;
+    this.Width = width;
+    this.Height = height;
 
     this.gl = this.canvas.getContext('webgl2', {
       antialias: false
@@ -443,7 +448,6 @@ class SnwMazeWebGlRenderer extends SnwMazeRenderer {
   clear () {
     this.gl.clearColor(0, 0, 0, 1);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-    this.renderNodes(this.origNodes);
     this.draw();
   }
 
@@ -485,7 +489,6 @@ class SnwMazeWebGlRenderer extends SnwMazeRenderer {
   }
 
   renderNodes (nodes) {
-    this.origNodes = nodes;
     for (let i = 0; i < nodes.length; i++) {
       for (let key in nodes[i].connections) {
         if (nodes[i].connections.hasOwnProperty(key)) {

@@ -40,6 +40,7 @@ function initMaze () {
   document.getElementById('playAnim').disabled = true;
   document.getElementById('stopAnim').disabled = true;
   let img = document.getElementById('img');
+  // mainCanvas = new SnwMazeRenderer('snwMazeMainCanvas', img.width, img.height, 20);
   mainCanvas = new SnwMazeWebGlRenderer('snwMazeMainCanvas', img.width, img.height, 20);
 
   //Create temporary canvas that we use to extract image data
@@ -307,7 +308,7 @@ let startTime = 0;
  * Call the selected path finding method and render results
  */
 function solve () {
-  mainCanvas.clear();
+  mazeClear();
   document.getElementById('playAnim').disabled = true;
   document.getElementById('stopAnim').disabled = true;
   recordAnim = document.getElementById('recordAnimation').checked;
@@ -415,6 +416,7 @@ function _loadImg (img) {
  */
 function mazeClear () {
   mainCanvas.clear();
+  mainCanvas.renderNodes(nodes);
 }
 
 /**
