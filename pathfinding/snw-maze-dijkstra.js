@@ -85,7 +85,7 @@ class SnwDijkstra extends SnwPathFind {
         this.workSet.splice(i, 1);
         continue;
       }
-      if (this.workSet[i].type == SNW.maze.NodeType.END) {
+      if (this.workSet[i].type === SNW.maze.NodeType.END) {
         this.endFound = true;
         this.endNode = this.workSet[i];
         break;

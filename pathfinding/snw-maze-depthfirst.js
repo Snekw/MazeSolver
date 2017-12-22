@@ -19,9 +19,9 @@ SNW.maze = SNW.maze || {};
 SNW.maze.pathFinding = SNW.maze.pathFinding || {};
 
 /**
- * Recursive path find
+ * Depth first path find
  */
-class SnwRecursive extends SnwPathFind {
+class SnwDepthfirst extends SnwPathFind {
   /**
    * Initialize the path finding method
    * @param solveNodes - Nodes the maze has
@@ -76,7 +76,7 @@ class SnwRecursive extends SnwPathFind {
     }
     if (recordAnim && animPathFind) {
       let n = {};
-      if(lastNode){
+      if (lastNode) {
         n = {
           x: node.x,
           y: node.y,
@@ -86,7 +86,7 @@ class SnwRecursive extends SnwPathFind {
             y: lastNode.y
           }
         };
-      }else{
+      } else {
         n = {
           x: node.x,
           y: node.y,
@@ -102,7 +102,7 @@ class SnwRecursive extends SnwPathFind {
       lastNode = node;
     }
     node.visited = true;
-    if (node.type == SNW.maze.NodeType.END) {
+    if (node.type === SNW.maze.NodeType.END) {
       this.endFound = true;
       this.endNode = node;
       return;
@@ -127,5 +127,4 @@ class SnwRecursive extends SnwPathFind {
   }
 }
 
-
-SNW.maze.pathFinding.recursive = new SnwRecursive('Recursive');
+SNW.maze.pathFinding.depthfirst = new SnwDepthfirst('Depth first');

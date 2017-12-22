@@ -13,6 +13,7 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 "use strict";
+
 class SnwMazeRenderer {
   /**
    * Initialize a new renderer
@@ -23,7 +24,7 @@ class SnwMazeRenderer {
    */
   constructor(canvas, width, height, scale) {
     this.canvas = document.getElementById(canvas);
-    if (this.canvas == null || this.canvas.tagName != 'CANVAS') {
+    if (this.canvas == null || this.canvas.tagName !== 'CANVAS') {
       throw 'SnwRendered: BAD CANVAS!';
     }
     this.ctx = this.canvas.getContext('2d');
@@ -129,25 +130,18 @@ class SnwMazeRenderer {
     switch (styleId) {
       case 0:
         return '#000000';
-        break;
       case 1:
         return '#8ba2ff';
-        break;
       case 2:
         return '#0000ff';
-        break;
       case 3:
         return '#00ffff';
-        break;
       case 4:
         return '#ff0000';
-        break;
       case 5:
         return '#ffeb00';
-        break;
       case 6:
         return '#00ff8b';
-        break;
       default:
         return '#ff00ff';
     }

@@ -13,6 +13,7 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 "use strict";
+
 /**
  * SnwMazeAnimator handles the animation needs for the path finding
  */

@@ -91,7 +91,7 @@ class SnwPathFind {
       this.animator.AnimationSpeed = this.animationSpeed;
       await this.animator.pushToAnimBuffer(n2);
     }
-    if (n.type != SNW.maze.NodeType.START) {
+    if (n.type !== SNW.maze.NodeType.START) {
       return this.makeRetArr(n.via);
     }
   }

@@ -13,6 +13,7 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 "use strict";
+
 class SnwMazeEditor {
   constructor() {
     this.canvas = new SnwMazeRenderer('snwMazeCursorCanvas', 10, 10, 10);
@@ -44,10 +45,13 @@ class SnwMazeEditor {
    */
   updateCursor(e) {
     let m = SnwMazeEditor.GetMousePosInside(e);
-    if (m.x != this.x || m.y || this.y) {
+    if (m.x !== this.x || m.y || this.y) {
       this.x = m.x;
       this.y = m.y;
       mazeEditor.renderCursor();
+    }
+    if(!SNW.maze.allowEdit){
+      return;
     }
     switch (e.which) {
       case 1:
@@ -58,7 +62,6 @@ class SnwMazeEditor {
         break;
       default:
         return;
-        break;
     }
 
     //Render the added wall/path
