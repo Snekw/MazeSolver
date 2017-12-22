@@ -305,6 +305,8 @@ let startTime = 0;
  */
 function solve() {
   SNW.maze.allowEdit = false;
+  document.getElementById('solve').disabled = true;
+  document.getElementById('clear').disabled = true;
   animCanvas.clear();
   document.getElementById('playAnim').disabled = true;
   document.getElementById('stopAnim').disabled = true;
@@ -361,6 +363,8 @@ function renderSolved(pathRet) {
   let timeTaken = new Date();
   timeTaken.setTime(t);
   document.getElementById('pathTime').innerHTML = timeTaken.getMinutes() + 'm' + timeTaken.getSeconds() + 's' + timeTaken.getMilliseconds() + ' Raw: ' + t.toString();
+  document.getElementById('solve').disabled = false;
+  document.getElementById('clear').disabled = false;
   SNW.maze.allowEdit = true;
 }
 
@@ -408,7 +412,8 @@ function _loadImg(img) {
  * -- Reloads the maze
  */
 function mazeClear() {
-  animCanvas.clear();
+  if (SNW.maze.allowEdit)
+    animCanvas.clear();
 }
 
 /**
