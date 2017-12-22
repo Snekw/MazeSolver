@@ -17,100 +17,100 @@
 -->
 <html lang="en-US">
 <head>
-    <title>Maze solver</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="maze.css">
+  <title>Maze solver</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="maze.css">
 </head>
 <body>
-    <noscript>JS is required! Please enable JavaScript!</noscript>
-    <div class="source">
-        <h2>Source for this site: <a href="https://github.com/Snekw/MazeSolver">Github</a></h2>
-    </div>
-    <div class="controls">
-        <h2>Browser support</h2>
-        <label>Chrome v55+</label><br/>
-        <label>Firefox v52+</label><br/>
-        <label>Opera v43+</label><br/>
-        <label>Edge v15+</label><br/>
-        <label>Safari v10.1+</label><br/>
-        <label>Internet Explorer <b style="color:red;">NOT SUPPORTED</b></label><br/>
-        <h3>Make sure to have more than 2 GB of free RAM if you want to use large images!</h3>
-    </div>
-    <div class="controls">
-        <label for="file">File:</label>
-        <input id="file" type="file" accept="image/png" onchange="selectImageFromFile(this)"/>
-        <br/>
-        <label for="imgSel">Or select image:</label>
-        <select id="imgSel" onchange="selectImage()">
-            <option>10x10</option>
-            <option>10x10-loop</option>
-            <option>10x10-sides</option>
-            <option>20x20</option>
-            <option>30x30</option>
-            <option>400x400</option>
-            <option>test</option>
-            <option>1000x1000</option>
-            <option>1000x1000B</option>
-            <option>box-30</option>
-        </select>
-        <br/>
-        <label for="scale">Render scale:</label>
-        <input type="number" id="scale" value="20" onchange="setScale(this.value)"/>
-        <br/>
-        <label for="showOrigImage">Show original image:</label>
-        <input id="showOrigImage" type="checkbox" onchange="toggleShowImage()"/>
-    </div>
-    <div class="controls">
-        <img id="img" src="mazes/maze-10x10.png" class="hide">
-        <br id="imgSep" class="hide"/>
-        <label for="method">Method</label>
-        <select id="method" title="Method">
-        </select>
-        <button onclick="solve()">Solve</button>
-        <button onclick="mazeClear()">Clear</button>
-        <br/>
-        <button id="playAnim" onclick="startAnim()" disabled>Play animation</button>
-        <button id="stopAnim" onclick="stopAnim()" disabled>Stop animation</button>
-        <br/>
-        <label for="recordAnimation">Record animation</label>
-        <input id="recordAnimation" type="checkbox" checked onchange="updateAnimCheckBoxes()"/>
-        <br/>
-        <label for="rtAnim">Real time animation</label>
-        <input id="rtAnim" type="checkbox" checked/>
-        <br/>
-        <label for="animPathFind">Path finding</label>
-        <input id="animPathFind" type="checkbox" checked/>
-        <br/>
-        <label for="animFoundPath">Found path</label>
-        <input id="animFoundPath" type="checkbox" checked/>
-        <br/>
-        <label for="animSpeed">Animation speed:</label>
-        <input id="animSpeed" type="number" value="5" onchange="setAnimationSpeed(this.value)"/>
-    </div>
-    <div class="controls">
-        <label>Generating:</label>
-        <label id="genTime">00:00:00</label>
-        <br/>
-        <label>Path finding:</label>
-        <label id="pathTime">00:00:00</label>
-        <br/>
-        <label>Mouse left click to add a path.</label>
-        <br/>
-        <label>Mouse right click to add a wall.</label>
-    </div>
-    <div class="canvas-container">
-        <canvas id="snwMazeMainCanvas"></canvas>
-        <canvas id="snwMazeAnimCanvas" class="bgTransparent"></canvas>
-        <canvas id="snwMazeCursorCanvas" class="bgTransparent"></canvas>
-    </div>
-    <script src="snw-maze-renderer.js"></script>
-    <script src="snw-maze-anim.js"></script>
-    <script src="snw-maze-pathfind-class.js"></script>
-    <script src="pathfinding/snw-maze-astar.js"></script>
-    <script src="pathfinding/snw-maze-dijkstra.js"></script>
-    <script src="pathfinding/snw-maze-depthfirst.js"></script>
-    <script src="snw-maze-edit.js"></script>
-    <script src="snw-maze.js"></script>
+  <noscript>JS is required! Please enable JavaScript!</noscript>
+  <div class="source">
+    <h2>Source for this site: <a href="https://github.com/Snekw/MazeSolver">Github</a></h2>
+  </div>
+  <div class="controls">
+    <h2>Browser support</h2>
+    <label>Chrome v55+</label><br/>
+    <label>Firefox v52+</label><br/>
+    <label>Opera v43+</label><br/>
+    <label>Edge v15+</label><br/>
+    <label>Safari v10.1+</label><br/>
+    <label>Internet Explorer <b style="color:red;">NOT SUPPORTED</b></label><br/>
+    <h3>Make sure to have more than 2 GB of free RAM if you want to use large images!</h3>
+  </div>
+  <div class="controls">
+    <label for="file">File:</label>
+    <input id="file" type="file" accept="image/png" onchange="selectImageFromFile(this)"/>
+    <br/>
+    <label for="imgSel">Or select image:</label>
+    <select id="imgSel" onchange="selectImage()">
+      <option>10x10</option>
+      <option>10x10-loop</option>
+      <option>10x10-sides</option>
+      <option>20x20</option>
+      <option>30x30</option>
+      <option>400x400</option>
+      <option>test</option>
+      <option>1000x1000</option>
+      <option>1000x1000B</option>
+      <option>box-30</option>
+    </select>
+    <br/>
+    <label for="scale">Render scale:</label>
+    <input type="number" id="scale" value="20" onchange="setScale(this.value)"/>
+    <br/>
+    <label for="showOrigImage">Show original image:</label>
+    <input id="showOrigImage" type="checkbox" onchange="toggleShowImage()"/>
+  </div>
+  <div class="controls">
+    <img id="img" src="mazes/maze-10x10.png" class="hide">
+    <br id="imgSep" class="hide"/>
+    <label for="method">Method</label>
+    <select id="method" title="Method">
+    </select>
+    <button onclick="solve()">Solve</button>
+    <button onclick="mazeClear()">Clear</button>
+    <br/>
+    <button id="playAnim" onclick="startAnim()" disabled>Play animation</button>
+    <button id="stopAnim" onclick="stopAnim()" disabled>Stop animation</button>
+    <br/>
+    <label for="recordAnimation">Record animation</label>
+    <input id="recordAnimation" type="checkbox" checked onchange="updateAnimCheckBoxes()"/>
+    <br/>
+    <label for="rtAnim">Real time animation</label>
+    <input id="rtAnim" type="checkbox" checked/>
+    <br/>
+    <label for="animPathFind">Path finding</label>
+    <input id="animPathFind" type="checkbox" checked/>
+    <br/>
+    <label for="animFoundPath">Found path</label>
+    <input id="animFoundPath" type="checkbox" checked/>
+    <br/>
+    <label for="animSpeed">Animation speed:</label>
+    <input id="animSpeed" type="number" value="5" onchange="setAnimationSpeed(this.value)"/>
+  </div>
+  <div class="controls">
+    <label>Generating:</label>
+    <label id="genTime">00:00:00</label>
+    <br/>
+    <label>Path finding:</label>
+    <label id="pathTime">00:00:00</label>
+    <br/>
+    <label>Mouse left click to add a path.</label>
+    <br/>
+    <label>Mouse right click to add a wall.</label>
+  </div>
+  <div class="canvas-container">
+    <canvas id="snwMazeMainCanvas"></canvas>
+    <canvas id="snwMazeAnimCanvas" class="bgTransparent"></canvas>
+    <canvas id="snwMazeCursorCanvas" class="bgTransparent"></canvas>
+  </div>
+  <script src="snw-maze-renderer.js"></script>
+  <script src="snw-maze-anim.js"></script>
+  <script src="snw-maze-pathfind-class.js"></script>
+  <script src="pathfinding/snw-maze-astar.js"></script>
+  <script src="pathfinding/snw-maze-dijkstra.js"></script>
+  <script src="pathfinding/snw-maze-depthfirst.js"></script>
+  <script src="snw-maze-edit.js"></script>
+  <script src="snw-maze.js"></script>
 </body>
 </html>
