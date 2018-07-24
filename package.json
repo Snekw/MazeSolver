@@ -2,12 +2,9 @@
   "name": "snw-maze",
   "version": "0.0.1",
   "devDependencies": {
-    "browser-sync": "^2.18.8"
+    "browser-sync": "^2.24.6"
   },
   "scripts": {
-    "bsync": "browser-sync start --server --files \"./**/*.*\""
-  },
-  "dependencies": {
-    "png-js": "^0.1.1"
+    "bsync": "browser-sync start --server --files \"**/*.*\""
   }
 }

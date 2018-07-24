@@ -10,37 +10,63 @@ html, body {
     margin: 20px;
 }
 
-.canvas-container{
-    margin: 20px;
-    position: relative;
+.controls-side-bar {
+    background-color: #999999;
+    align-self: flex-end;
+    flex-grow: 0;
+    height: 100%;
 }
 
-.source{
-    margin: 20px;
+.canvas-container {
+    position: relative;
+    flex-grow: 1;
+}
+
+.banner {
     color: #ab3b10;
 }
 
-.source a{
+.banner a {
     text-decoration: none;
     color: #445aab;
 }
 
-.hide{
+.hide {
     display: none;
 }
 
-.show{
+.show {
     display: inline;
 }
 
-canvas{
+canvas {
     position: absolute;
     background-color: black;
     top: 0;
     left: 0;
-    margin-bottom: 10px;
 }
 
-.bgTransparent{
+h2 {
+    margin: 0.5em;
+}
+
+.bgTransparent {
     background-color: transparent;
+}
+
+.flex{
+    display: flex;
+    height: 100%;
+}
+
+.flex-column{
+    flex-direction: column;
+}
+
+.flex-row{
+    flex-direction: row;
+}
+
+.flex-end{
+    align-self: flex-end;
 }

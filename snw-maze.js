@@ -14,9 +14,17 @@
  */
 'use strict';
 window.SNW.debug = false;
-let mainCanvas = new SnwMazeWebGlRenderer('snwMazeMainCanvas', 10, 10, 20);
+let mainCanvas = new SnwMazeLunaRenderer('snwMazeMainCanvas', 1);
+mainCanvas.loadNodeGrid(1000,1000);
+mainCanvas.setNodeState(10, 10, 1);
+mainCanvas.setNodeState(11, 10, 2);
+mainCanvas.setNodeState(10, 11, 2);
+mainCanvas.setNodeState(11, 11, 2);
+mainCanvas.setNodeState(9, 10, 2);
+mainCanvas.setNodeState(10, 9, 2);
+mainCanvas.setNodeState(9, 9, 2);
 // let mainCanvas = new SnwMazeRenderer('snwMazeMainCanvas', 10, 10, 20);
-let mazeEditor = new SnwMazeEditor();
+// let mazeEditor = new SnwMazeEditor();
 
 //Fields
 let mazeBlockData = [];
@@ -29,6 +37,7 @@ let stopAnimProgress = false;
 let recordAnim = true;
 let animPathFind = true;
 let animFoundPath = true;
+
 // let animCanvas = new SnwMazeRenderer('snwMazeAnimCanvas', 10, 10, 20);
 
 /**
@@ -41,7 +50,7 @@ function initMaze () {
   document.getElementById('stopAnim').disabled = true;
   let img = document.getElementById('img');
   // mainCanvas = new SnwMazeRenderer('snwMazeMainCanvas', img.width, img.height, 20);
-  mainCanvas = new SnwMazeWebGlRenderer('snwMazeMainCanvas', img.width, img.height, 20);
+  // mainCanvas = new SnwMazeWebGlRenderer('snwMazeMainCanvas', img.width, img.height, 20);
 
   //Create temporary canvas that we use to extract image data
   let tempCanvas = document.createElement('canvas');
@@ -304,6 +313,7 @@ class FoundPath {
 }
 
 let startTime = 0;
+
 /**
  * Call the selected path finding method and render results
  */
@@ -553,9 +563,9 @@ function doMaze () {
 
   createBlockData();
 
-  mainCanvas.renderNodes(nodes);
+  // mainCanvas.renderNodes(nodes);
 
-  mazeEditor.updateCanvasInfo(mainCanvas.Width, mainCanvas.Height, mainCanvas.Scale);
+  // mazeEditor.updateCanvasInfo(mainCanvas.Width, mainCanvas.Height, mainCanvas.Scale);
 
   let timeTaken = new Date();
   let t = performance.now() - genStartTime;
